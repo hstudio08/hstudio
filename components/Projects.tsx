@@ -1,68 +1,291 @@
 "use client";
-import { motion } from "framer-motion";
-import { ExternalLink, Star } from "lucide-react";
 
-const projects = [
-  { title: "Fintech Dashboard", desc: "A modern SaaS dashboard for a crypto startup.", color: "bg-blue-100" },
-  { title: "E-Commerce Store", desc: "High-conversion headless Shopify storefront.", color: "bg-sky-100" },
-  { title: "AI Writing Tool", desc: "Landing page for an AI-powered copywriting app.", color: "bg-indigo-100" }
-];
+import React, { useState, useEffect, useRef } from 'react';
+import Image from 'next/image';
+
+// --- Utility Components for Animations --- //
+
+// 1. Scroll Reveal Wrapper
+const ScrollReveal = ({ children, delay = 0 }: { children: React.ReactNode, delay?: number }) => {
+  const [inView, setInView] = useState(false);
+  const ref = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const observer = new IntersectionObserver(([entry]) => {
+      if (entry.isIntersecting) {
+        setInView(true);
+        observer.unobserve(entry.target);
+      }
+    }, { threshold: 0.15 });
+
+    if (ref.current) observer.observe(ref.current);
+    return () => observer.disconnect();
+  }, []);
+
+  return (
+    <div 
+      ref={ref} 
+      style={{ transitionDelay: `${delay}ms` }}
+      className={`transition-all duration-1000 ease-out transform ${inView ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-12'}`}
+    >
+      {children}
+    </div>
+  );
+};
+
+// 2. Animated Number Counter
+const AnimatedCounter = ({ end, suffix = "", duration = 2000 }: { end: number, suffix?: string, duration?: number }) => {
+  const [count, setCount] = useState(0);
+  const [inView, setInView] = useState(false);
+  const ref = useRef<HTMLSpanElement>(null);
+
+  useEffect(() => {
+    const observer = new IntersectionObserver(([entry]) => {
+      if (entry.isIntersecting) {
+        setInView(true);
+        observer.unobserve(entry.target);
+      }
+    });
+    if (ref.current) observer.observe(ref.current);
+    return () => observer.disconnect();
+  }, []);
+
+  useEffect(() => {
+    if (!inView) return;
+    let startTimestamp: number | null = null;
+    const step = (timestamp: number) => {
+      if (!startTimestamp) startTimestamp = timestamp;
+      const progress = Math.min((timestamp - startTimestamp) / duration, 1);
+      const easeOutQuart = 1 - Math.pow(1 - progress, 4);
+      setCount(Math.floor(easeOutQuart * end));
+      if (progress < 1) window.requestAnimationFrame(step);
+    };
+    window.requestAnimationFrame(step);
+  }, [inView, end, duration]);
+
+  return <span ref={ref} className="font-['Familjen_Grotesk'] tracking-tight">{count}{suffix}</span>;
+};
+
+// --- Main Component --- //
 
 export default function Projects() {
+  const [sectionInView, setSectionInView] = useState(false);
+  const sectionRef = useRef<HTMLElement>(null);
+
+  // Scroll effect for Section Background Color Shift
+  useEffect(() => {
+    const observer = new IntersectionObserver(([entry]) => {
+      setSectionInView(entry.isIntersecting);
+    }, { threshold: 0.05 });
+
+    if (sectionRef.current) observer.observe(sectionRef.current);
+    return () => observer.disconnect();
+  }, []);
+
+  const showcase = [
+    { 
+      title: "The Career Advisors", 
+      tag: "Education Consultancy", 
+      text: "A premium educational consultancy platform in Srinagar, delivering seamless student guidance and enrollment services.", 
+      image: "https://res.cloudinary.com/dpqsadqxj/image/upload/q_auto/f_auto/v1780641297/pexels-pixabay-267885_pc88j4.jpg",
+      link: "https://thecareeradvisors.in"
+    },
+    { 
+      title: "KICC", 
+      tag: "Education Consultancy", 
+      text: "A top-tier educational consulting website in Srinagar, designed for maximum student engagement and trust.", 
+      image: "https://res.cloudinary.com/dpqsadqxj/image/upload/q_auto/f_auto/v1780641541/pexels-sora-shimazaki-5668858_1200x768_jociel.avif",
+      link: "https://kicc.co.in"
+    },
+    { 
+      title: "The Vintage House", 
+      tag: "Hotel & Restaurant", 
+      text: "A shining digital presence for Kupwara's most loved hotel, showcasing their exquisite hospitality and vintage charm.", 
+      image: "https://res.cloudinary.com/dpqsadqxj/image/upload/q_auto/f_auto/v1780641602/get-together_e0vjzh.jpg",
+      link: "https://vintagehousekupwara.com"
+    }
+  ];
+
   return (
-    <section id="work" className="py-24 px-6 md:px-12 bg-slate-50/50">
-      <div className="max-w-7xl mx-auto">
-        <div className="text-center mb-16">
-          <h2 className="text-3xl md:text-5xl font-bold text-slate-900 mb-4">Featured Projects</h2>
-          <p className="text-slate-600 max-w-2xl mx-auto">Real results for real businesses.</p>
-        </div>
+    <section 
+      id="projects" 
+      ref={sectionRef}
+      className={`py-20 overflow-hidden transition-colors duration-1000 ease-in-out ${sectionInView ? 'bg-slate-50/80' : 'bg-white'}`}
+    >
+      <div className="max-w-[96rem] mx-auto px-4 sm:px-8">
+        
+        {/* Component Header Block */}
+        <ScrollReveal>
+          <div className="text-center flex flex-col items-center space-y-3 mb-16">
+            <span className="text-xs font-bold text-blue-600 uppercase tracking-widest bg-blue-50 px-4 py-1.5 rounded-full font-['Familjen_Grotesk'] shadow-sm">
+              Our Work
+            </span>
+            <h2 className="text-4xl md:text-6xl font-black text-slate-900 font-['Foldit'] tracking-wide drop-shadow-sm">
+              Real Projects. Real Results.
+            </h2>
+            <p className="text-xl md:text-2xl text-slate-500 font-['Story_Script']">
+              A glimpse of websites we&apos;ve built for amazing brands in Kashmir.
+            </p>
+          </div>
+        </ScrollReveal>
 
-        {/* Trust Stats */}
-        <div className="flex flex-wrap justify-center gap-8 md:gap-16 mb-16 border-b border-slate-200 pb-12">
-          <div className="text-center"><h3 className="text-4xl font-bold text-brand-500">25+</h3><p className="text-slate-500 text-sm mt-1">Happy Clients</p></div>
-          <div className="text-center"><h3 className="text-4xl font-bold text-brand-500">30+</h3><p className="text-slate-500 text-sm mt-1">Projects Shipped</p></div>
-          <div className="text-center"><h3 className="text-4xl font-bold text-brand-500">100%</h3><p className="text-slate-500 text-sm mt-1">Satisfaction Rate</p></div>
-        </div>
+        {/* Portfolio Dynamic Layout Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-10">
+          {showcase.map((project, index) => (
+            <ScrollReveal key={index} delay={index * 150}>
+              <div className="group relative flex flex-col bg-white border border-slate-100 rounded-[2rem] overflow-hidden transition-all duration-700 hover:shadow-[0_20px_40px_rgba(224,166,247,0.15)] hover:-translate-y-3 hover:border-[#bff0f5]/80 h-full z-10">
+                
+                {/* Soft Animated Background Glow on Hover */}
+                <div className="absolute inset-0 bg-gradient-to-br from-[#bff0f5]/10 via-transparent to-[#e0a6f7]/10 opacity-0 group-hover:opacity-100 transition-opacity duration-700 pointer-events-none z-0" />
 
-        {/* Project Grid */}
-        <div className="grid md:grid-cols-3 gap-8 mb-20">
-          {projects.map((p, i) => (
-            <motion.div 
-              key={i}
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ delay: i * 0.1 }}
-              className="glass-card p-4 group hover:-translate-y-2 transition-all duration-300"
-            >
-              <div className={`w-full h-48 rounded-xl mb-6 ${p.color} flex items-center justify-center`}>
-                <span className="text-slate-400 text-sm">Project Preview</span>
-              </div>
-              <h3 className="text-xl font-bold text-slate-900 mb-2">{p.title}</h3>
-              <p className="text-slate-600 mb-6 text-sm">{p.desc}</p>
-              <button className="flex items-center gap-2 text-brand-600 font-medium text-sm group-hover:text-brand-700">
-                View Project <ExternalLink size={16} />
-              </button>
-            </motion.div>
-          ))}
-        </div>
+                {/* Media Container Box with Premium Bloom Effect */}
+                <div className="h-64 relative flex flex-col justify-between overflow-hidden p-6 z-10">
+                  <Image 
+                    src={project.image}
+                    alt={project.title}
+                    fill
+                    sizes="(max-width: 768px) 100vw, 33vw"
+                    className="object-cover transform transition-transform duration-1000 ease-[cubic-bezier(0.25,0.46,0.45,0.94)] group-hover:scale-110"
+                  />
+                  
+                  {/* Dynamic Bloom Overlay */}
+                  <div className="absolute inset-0 bg-slate-900/40 transition-colors duration-700 group-hover:bg-gradient-to-t group-hover:from-slate-900/80 group-hover:via-slate-900/20 group-hover:to-[#a6f7d0]/10 mix-blend-multiply" />
+                  
+                  <span className="relative bg-white/90 backdrop-blur-md text-[11px] uppercase tracking-wider font-bold text-slate-900 px-4 py-1.5 rounded-full self-start shadow-[0_4px_10px_rgba(0,0,0,0.1)] z-10 transition-transform duration-500 group-hover:-translate-y-1 font-['Familjen_Grotesk']">
+                    {project.tag}
+                  </span>
+                </div>
 
-        {/* Testimonials */}
-        <div className="grid md:grid-cols-2 gap-8">
-          {[1, 2].map((i) => (
-            <div key={i} className="glass-card p-8 border-t-4 border-t-brand-500">
-              <div className="flex text-yellow-400 mb-4"><Star fill="currentColor" /><Star fill="currentColor" /><Star fill="currentColor" /><Star fill="currentColor" /><Star fill="currentColor" /></div>
-              <p className="text-slate-700 italic mb-6">"H Studios transformed our online presence completely. Haadi and the team delivered a stunning website that doubled our conversion rate in just one month."</p>
-              <div className="flex items-center gap-4">
-                <div className="w-10 h-10 rounded-full bg-slate-200" />
-                <div>
-                  <h4 className="font-bold text-slate-900 text-sm">Client Name</h4>
-                  <p className="text-slate-500 text-xs">CEO, Tech Corp</p>
+                {/* Text Description Box */}
+                <div className="p-8 flex flex-col flex-grow justify-between space-y-5 bg-transparent relative z-10 transition-colors duration-700">
+                  <div>
+                    <h3 className="text-2xl font-extrabold text-slate-950 transition-colors duration-500 group-hover:text-transparent group-hover:bg-clip-text group-hover:bg-gradient-to-r group-hover:from-blue-600 group-hover:to-[#e0a6f7]">
+                      {project.title}
+                    </h3>
+                    <p className="text-sm text-slate-500 mt-2.5 leading-relaxed font-medium transition-colors duration-500 group-hover:text-slate-700">
+                      {project.text}
+                    </p>
+                  </div>
+                  
+                  <a href={project.link} target="_blank" rel="noopener noreferrer" className="text-xs font-bold text-blue-600 flex items-center space-x-1.5 mt-auto pt-4 transition-all duration-300 group-hover:text-[#e0a6f7]">
+                    <span className="uppercase tracking-widest">Visit Website</span>
+                    <span className="transform transition-transform duration-500 group-hover:translate-x-2 group-hover:-translate-y-0.5 text-lg">↗</span>
+                  </a>
                 </div>
               </div>
-            </div>
+            </ScrollReveal>
           ))}
         </div>
+
+        {/* Client Love & Testimonials */}
+        <ScrollReveal delay={200}>
+          <div id="services" className="mt-32 bg-white rounded-[2.5rem] border border-slate-100 p-8 md:p-14 shadow-[0_10px_40px_rgba(0,0,0,0.02)] relative overflow-hidden">
+            
+            {/* Ambient Lighting inside Testimonial Box */}
+            <div className="absolute top-0 right-0 w-96 h-96 bg-[#bff0f5]/20 rounded-full blur-[100px] pointer-events-none" />
+            <div className="absolute bottom-0 left-0 w-96 h-96 bg-[#e0a6f7]/10 rounded-full blur-[100px] pointer-events-none" />
+
+            <div className="text-center flex flex-col items-center space-y-2 mb-16 relative z-10">
+              <span className="text-xs font-bold text-blue-600 uppercase tracking-widest bg-blue-50 px-4 py-1.5 rounded-full font-['Familjen_Grotesk'] shadow-sm">
+                Client Love
+              </span>
+              <h3 className="text-3xl md:text-5xl font-black text-slate-950 mt-4 tracking-tight">
+                They Trust <span className="text-gradient font-['Satisfy'] font-normal px-2 tracking-normal text-4xl md:text-6xl drop-shadow-sm">H &bull; Studios</span>
+              </h3>
+            </div>
+
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 items-stretch relative z-10">
+              
+              {/* Founder's Note (Left Column) */}
+              <div className="lg:col-span-5 bg-gradient-to-br from-slate-900 to-slate-950 rounded-3xl p-10 text-white shadow-2xl relative overflow-hidden flex flex-col justify-center transition-transform duration-700 hover:scale-[1.02]">
+                <div className="absolute top-0 right-0 w-48 h-48 bg-[#a7fcfb]/15 rounded-full blur-3xl -translate-y-1/2 translate-x-1/3"></div>
+                <div className="absolute bottom-0 left-0 w-48 h-48 bg-[#e0a6f7]/15 rounded-full blur-3xl translate-y-1/2 -translate-x-1/2"></div>
+                
+                <div className="relative z-10">
+                  <h4 className="text-[11px] font-black uppercase tracking-widest text-[#a7fcfb] mb-6 font-['Familjen_Grotesk']">
+                    Founder&apos;s Note
+                  </h4>
+                  <p className="text-2xl text-[#bff0f5]/90 leading-relaxed mb-10 font-['Story_Script']">
+                    &ldquo;At <strong className="text-white font-['Satisfy'] text-3xl mx-1 font-normal tracking-wide">H &bull; Studios</strong>, we don&apos;t just build websites; we craft digital experiences that capture the soul of your brand. Seeing our clients thrive online is what drives our relentless pursuit of perfection.&rdquo;
+                  </p>
+                  <div className="flex items-center space-x-4">
+                    <div className="w-12 h-12 rounded-full bg-gradient-to-tr from-[#a6f7d0] to-[#e0a6f7] p-[2px] shadow-lg">
+                      <div className="w-full h-full bg-slate-800 rounded-full overflow-hidden relative flex items-center justify-center">
+                        <Image src="/logo.png" alt="Founder" width={24} height={24} className="object-contain" />
+                      </div>
+                    </div>
+                    <div>
+                      <p className="text-base font-black text-white tracking-tight">Haadi Sabzar Lone</p>
+                      <p className="text-xs text-[#bff0f5]/70 font-bold uppercase tracking-wider mt-0.5 font-['Familjen_Grotesk']">Founder</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Reviews (Right Column) */}
+              <div className="lg:col-span-7 space-y-6 flex flex-col justify-center">
+                {[
+                  { 
+                    name: "Waqar Abdullah", 
+                    role: "Founder, The Career Advisors-Srinagar", 
+                    img: "https://res.cloudinary.com/drytpdpx3/image/upload/q_auto/f_auto/v1779560322/waqarportrait_ktr3dd.png",
+                    quote: "H • Studios didn't just satisfy us; we absolutely loved their work. The website perfectly captures our vision and has elevated our brand to new heights." 
+                  },
+                  { 
+                    name: "Danish Shafi", 
+                    role: "Founder, KICC Consultancy-Srinagar", 
+                    img: "https://kicc.co.in/_next/image?url=https%3A%2F%2Fres.cloudinary.com%2Fdwwzpcnkx%2Fimage%2Fupload%2Fq_auto%2Ff_auto%2Fv1779777535%2Ffounder_kxowrh.jpg&w=3840&q=75",
+                    quote: "Our online presence is now as shining as our brand. They delivered a platform that truly reflects the exquisite service we are known for." 
+                  }
+                ].map((client, i) => (
+                  <div key={i} className="bg-white border border-slate-100 p-8 rounded-[2rem] shadow-[0_4px_20px_rgba(0,0,0,0.02)] hover:shadow-[0_15px_40px_rgba(191,240,245,0.3)] transition-all duration-500 group hover:-translate-y-1 relative overflow-hidden">
+                    {/* Subtle Hover Gradient Inside Review */}
+                    <div className="absolute inset-0 bg-gradient-to-r from-transparent to-[#bff0f5]/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" />
+                    
+                    <div className="flex items-center space-x-5 mb-5 relative z-10">
+                      <div className="w-14 h-14 rounded-full overflow-hidden border-2 border-white relative shadow-md group-hover:border-[#a6f7d0] transition-colors duration-500">
+                        <Image src={client.img} alt={client.name} fill className="object-cover" />
+                      </div>
+                      <div className="flex-1">
+                        <div className="flex items-center space-x-1.5">
+                          <h4 className="text-base font-black text-slate-900 tracking-tight">{client.name}</h4>
+                          <svg className="w-4 h-4 text-blue-500" fill="currentColor" viewBox="0 0 20 20">
+                            <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                          </svg>
+                        </div>
+                        <p className="text-xs text-slate-500 font-bold uppercase tracking-wide mt-1 font-['Familjen_Grotesk']">{client.role}</p>
+                      </div>
+                      <div className="text-yellow-400 text-sm hidden sm:flex tracking-widest drop-shadow-sm">★★★★★</div>
+                    </div>
+                    <p className="text-[15px] text-slate-600 italic leading-relaxed relative z-10 font-medium group-hover:text-slate-800 transition-colors duration-300">
+                      &ldquo;{client.quote}&rdquo;
+                    </p>
+                  </div>
+                ))}
+              </div>
+
+            </div>
+
+            {/* Core Analytics Metrics Ledger Row with Counters */}
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-6 mt-16 pt-12 border-t border-slate-100 text-center relative z-10">
+              {[
+                { val: 25, label: "Happy Clients", suffix: "+" },
+                { val: 30, label: "Projects Completed", suffix: "+" },
+                { val: 100, label: "Client Satisfaction", suffix: "%" },
+                { val: 2, label: "Years of Excellence", suffix: "+" }
+              ].map((metric, i) => (
+                <div key={i} className="flex flex-col items-center justify-center p-6 bg-slate-50/50 rounded-3xl border border-slate-100/50 shadow-sm transition-all duration-500 hover:-translate-y-2 hover:shadow-[0_10px_30px_rgba(224,166,247,0.2)] hover:bg-white group cursor-default">
+                  <span className="text-5xl font-black text-transparent bg-clip-text bg-gradient-to-r from-slate-900 to-slate-700 group-hover:from-[#e0a6f7] group-hover:to-blue-600 transition-all duration-500 drop-shadow-sm">
+                    <AnimatedCounter end={metric.val} suffix={metric.suffix} />
+                  </span>
+                  <span className="text-xs text-slate-500 font-bold uppercase tracking-wider mt-3 font-['Familjen_Grotesk'] group-hover:text-slate-800 transition-colors duration-500">{metric.label}</span>
+                </div>
+              ))}
+            </div>
+
+          </div>
+        </ScrollReveal>
+
       </div>
     </section>
   );

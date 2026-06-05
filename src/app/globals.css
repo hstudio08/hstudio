@@ -1,20 +1,62 @@
 @import "tailwindcss";
 
-/* This tells Tailwind v4 to respect the tailwind.config.ts file we made */
-@config "../../tailwind.config.ts";
-
-html {
-  scroll-behavior: smooth;
+:root {
+  --background: #ffffff;
+  --foreground: #0f172a;
 }
 
-@layer base {
-  body {
-    @apply bg-white text-slate-900 overflow-x-hidden;
+@media (prefers-color-scheme: dark) {
+  :root {
+    --background: #0b0f19;
+    --foreground: #f8fafc;
   }
 }
 
-@layer components {
-  .glass-card {
-    @apply bg-white/80 backdrop-blur-md border border-slate-100 shadow-soft rounded-2xl;
-  }
+body {
+  color: var(--foreground);
+  background: var(--background);
+  font-family: 'Inter', sans-serif;
+  overflow-x: hidden;
+}
+
+/* Premium custom scrollbar styling */
+::-webkit-scrollbar {
+  width: 8px;
+}
+::-webkit-scrollbar-track {
+  background: #f1f5f9;
+}
+::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
+}
+
+/* Text Gradient Utilities (Using native CSS to bypass v4 @apply scoping errors) */
+.text-gradient {
+  background-image: linear-gradient(to right, #2563eb, #06b6d4);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+/* Smooth Card Lifts and Shadow Effects */
+.card-shadow-sm {
+  box-shadow: 0px 4px 20px rgba(0, 0, 0, 0.03);
+}
+
+.card-shadow-lg {
+  box-shadow: 0px 10px 40px rgba(37, 99, 235, 0.05);
+}
+
+/* Animation Keyframes for Hero Podiums */
+@keyframes float {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-12px); }
+}
+
+.animate-float {
+  animation: float 4s ease-in-out infinite;
 }
