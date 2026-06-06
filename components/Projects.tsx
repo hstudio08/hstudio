@@ -87,7 +87,7 @@ export default function Projects() {
     { 
       title: "KICC", 
       tag: "Education Consultancy", 
-      text: "A top-tier educational consulting website in Srinagar, designed for maximum student engagement and trust.", 
+      text: "A top-tier educational consultation agency in Srinagar, designed for maximum student engagement and trust.", 
       image: "https://res.cloudinary.com/dpqsadqxj/image/upload/q_auto/f_auto/v1780641541/pexels-sora-shimazaki-5668858_1200x768_jociel.avif",
       link: "https://kicc.co.in"
     },
@@ -178,7 +178,7 @@ export default function Projects() {
                 Client Love
               </span>
               <h3 className="text-2xl sm:text-3xl md:text-5xl font-black text-slate-950 mt-2 md:mt-4 tracking-tight">
-                They Trust <span className="text-gradient font-['Satisfy'] font-normal px-1 md:px-2 tracking-normal text-3xl sm:text-4xl md:text-6xl drop-shadow-sm">H &bull; Studios</span>
+                They Trust <span className="text-gradient font-['Satisfy'] font-normal px-1 md:px-2 tracking-normal text-3xl sm:text-4xl md:text-6xl drop-shadow-sm">Qurevo Technologies</span>
               </h3>
             </div>
 
@@ -197,14 +197,21 @@ export default function Projects() {
                       Founder&apos;s Note
                     </h4>
                     <p className="text-lg md:text-2xl text-[#bff0f5]/90 leading-relaxed md:leading-relaxed mb-6 md:mb-10 font-['Story_Script']">
-                      &ldquo;At <strong className="text-white font-['Satisfy'] text-xl md:text-3xl mx-1 font-normal tracking-wide">H &bull; Studios</strong>, we don&apos;t just build websites; we craft digital experiences that capture the soul of your brand. Seeing our clients thrive online is what drives our relentless pursuit of perfection.&rdquo;
+                      &ldquo;At <strong className="text-white font-['Satisfy'] text-xl md:text-3xl mx-1 font-normal tracking-wide">Qurevo Technologies</strong>, we don&apos;t just build websites; we craft digital experiences that capture the soul of your brand. Seeing our clients thrive online is what drives our relentless pursuit of perfection.&rdquo;
                     </p>
                     <div className="flex items-center space-x-3 md:space-x-4">
-                      <div className="w-10 h-10 md:w-12 md:h-12 rounded-full bg-gradient-to-tr from-[#a6f7d0] to-[#e0a6f7] p-[2px] shadow-lg flex-shrink-0">
-                        <div className="w-full h-full bg-slate-800 rounded-full overflow-hidden relative flex items-center justify-center">
-                          <Image src="/logo.png" alt="Portrait of Haadi Sabzar Lone, Founder" width={24} height={24} className="object-contain w-5 md:w-6 h-auto" />
-                        </div>
+                      <div className="w-12 h-12 md:w-14 md:h-14 rounded-full bg-gradient-to-tr from-[#a6f7d0] to-[#e0a6f7] p-[2px] shadow-lg flex-shrink-0">
+                      <div className="w-full h-full bg-slate-800 rounded-full overflow-hidden relative">
+                        <Image 
+                          src="/haadi-sabzar-founder-qurevotechnologies-icon.png"
+                          alt="Haadi Sabzar - Founder of Qurevo Technologies"
+                          width={1215} 
+                          height={1145} 
+                          // object-cover is the magic class that prevents distortion
+                          className="w-full h-full object-cover" 
+                        />
                       </div>
+                    </div>
                       <div>
                         <p className="text-sm md:text-base font-black text-white tracking-tight">Haadi Sabzar Lone</p>
                         <p className="text-[10px] md:text-xs text-[#bff0f5]/70 font-bold uppercase tracking-wider mt-0.5 font-['Familjen_Grotesk']">Founder</p>
@@ -219,13 +226,13 @@ export default function Projects() {
                   { 
                     name: "Waqar Abdullah", 
                     role: "Founder, The Career Advisors-Srinagar", 
-                    img: "https://res.cloudinary.com/drytpdpx3/image/upload/q_auto/f_auto/v1779560322/waqarportrait_ktr3dd.png",
-                    quote: "H • Studios didn't just satisfy us; we absolutely loved their work. The website perfectly captures our vision and has elevated our brand to new heights." 
+                    img: "/icons/waqar-abdullah-founder-thecareeradvisors.png",
+                    quote: "Qurevo Technologies didn't just satisfy us; we absolutely loved their work. The website perfectly captures our vision and has elevated our brand to new heights." 
                   },
                   { 
                     name: "Danish Shafi", 
                     role: "Founder, KICC Consultancy-Srinagar", 
-                    img: "https://kicc.co.in/_next/image?url=https%3A%2F%2Fres.cloudinary.com%2Fdwwzpcnkx%2Fimage%2Fupload%2Fq_auto%2Ff_auto%2Fv1779777535%2Ffounder_kxowrh.jpg&w=3840&q=75",
+                    img: "/icons/danish-shafi-founder-kicc-consultancy.png",
                     quote: "Our online presence is now as shining as our brand. They delivered a platform that truly reflects the exquisite service we are known for." 
                   }
                 ].map((client, i) => (
@@ -238,7 +245,13 @@ export default function Projects() {
                     
                     <div className="flex items-center space-x-3 md:space-x-5 mb-3 md:mb-5 relative z-10">
                       <div className="w-12 h-12 md:w-14 md:h-14 rounded-full overflow-hidden border-2 border-white relative shadow-sm md:shadow-md group-hover:border-[#a6f7d0] transition-colors duration-500 flex-shrink-0">
-                        <Image src={client.img} alt={`Portrait of ${client.name}`} fill className="object-cover" />
+                        <Image 
+                          src={client.img} 
+                          alt={`Portrait of ${client.name}`} 
+                          fill 
+                          sizes="(max-width: 768px) 48px, 56px"
+                          className="object-cover" 
+                        />
                       </div>
                       <div className="flex-1">
                         <div className="flex items-center space-x-1.5">

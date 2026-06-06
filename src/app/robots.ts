@@ -1,8 +1,8 @@
 import { MetadataRoute } from 'next';
 
 export default function robots(): MetadataRoute.Robots {
-  // TODO: Replace with your actual live domain
-  const baseUrl = 'https://hstudios.vercel.app';
+  // Updated to the expected new Vercel domain
+  const baseUrl = 'https://qurevo.vercel.app';
 
   return {
     rules: {

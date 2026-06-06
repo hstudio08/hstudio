@@ -4,6 +4,7 @@ import Projects from "../../components/Projects";
 import Pricing from "../../components/Pricing";
 import Contact from "../../components/Contact";
 import Footer from "../../components/Footer";
+import AboutUs from "../../components/AboutUs";
 
 // STRICT CACHING: Forces Next.js to serve this from CDN cache permanently until rebuilt
 export const dynamic = 'force-static';
@@ -13,10 +14,10 @@ export default function Home() {
   const jsonLd = {
     "@context": "https://schema.org",
     "@type": "ProfessionalService",
-    "name": "H Studios",
-    "image": "https://hstudios.vercel.app/logo.png", 
-    "@id": "https://hstudios.vercel.app", 
-    "url": "https://hstudios.vercel.app", 
+    "name": "Qurevo Technologies",
+    "image": "https://qurevotechnologies.vercel.app/logo.png", 
+    "@id": "https://qurevotechnologies.vercel.app", 
+    "url": "https://qurevotechnologies.vercel.app", 
     "address": {
       "@type": "PostalAddress",
       "addressLocality": "Srinagar",
@@ -33,7 +34,7 @@ export default function Home() {
       "@type": "Person",
       "name": "Haadi Sabzar Lone"
     },
-    "description": "H Studios is a premium web development agency turning ideas into high-performance, fast, and modern websites."
+    "description": "Qurevo Technologies is a premium web development agency turning ideas into high-performance, fast, and modern websites."
   };
 
   return (

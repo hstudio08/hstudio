@@ -7,7 +7,7 @@ export default function Footer() {
         
         {/* Copyright */}
         <span className="text-xs text-slate-600 font-bold tracking-wide">
-          © {new Date().getFullYear()} H &bull; Studios. All rights reserved.
+          © {new Date().getFullYear()} Qurevo Technologies. All rights reserved.
         </span>
 
         {/* Location & Love Badge */}

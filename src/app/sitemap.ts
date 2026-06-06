@@ -1,8 +1,8 @@
 import { MetadataRoute } from 'next';
 
 export default function sitemap(): MetadataRoute.Sitemap {
-  // TODO: Replace with your actual live domain (e.g., https://hstudios.in)
-  const baseUrl = 'https://hstudios.vercel.app';
+  // Updated to the expected new Vercel domain
+  const baseUrl = 'https://qurevo.vercel.app';
 
   return [
     {

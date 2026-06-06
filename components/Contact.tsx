@@ -154,7 +154,7 @@ export default function Contact() {
             <div className="flex items-start justify-between">
               <div>
                 <div className="w-14 h-14 md:w-20 md:h-20 rounded-xl md:rounded-[1.5rem] bg-white shadow-[0_6px_20px_rgba(0,0,0,0.05)] mb-5 md:mb-8 flex items-center justify-center border border-slate-100 transform hover:scale-105 transition-transform duration-500">
-                  <Image src="/logo.png" alt="H Studios Branding Icon" width={48} height={48} className="w-8 md:w-12 h-auto object-contain" />
+                  <Image src="/logo.png" alt="Qurevo Technologies Brand Logo" width={48} height={48} className="w-8 md:w-12 h-auto object-contain" />
                 </div>
                 <h3 className="text-2xl sm:text-3xl lg:text-4xl font-extrabold tracking-tight text-slate-900 mb-2 md:mb-4 drop-shadow-sm">Book Website <br className="hidden sm:block"/>Window</h3>
                 <p className="text-xs sm:text-sm md:text-base text-slate-600 leading-relaxed font-medium max-w-sm drop-shadow-sm">

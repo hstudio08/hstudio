@@ -39,17 +39,17 @@ export default function Navbar() {
           : 'max-w-[96rem] px-8 py-4 bg-[#e2f2d0]/80 backdrop-blur-md shadow-sm border-white/20'}`}
       >
         {/* Logo - Added nav-target for magnet effect */}
-        <Link href="/" className="nav-target flex items-center space-x-3 group outline-none rounded-lg p-1" aria-label="H Studios Home">
+        <Link href="/" className="nav-target flex items-center space-x-3 group outline-none rounded-lg p-1" aria-label="Qurevo Technologies Home">
           <Image 
             src="/logo.png" 
-            alt="H Studios Logo" 
+            alt="Qurevo Technologies Logo" 
             width={48} 
             height={48} 
             className="w-10 h-auto md:w-12 transition-transform duration-300 group-hover:scale-105" 
             priority
           />
           <span className="hidden sm:block text-xl font-black tracking-tight text-slate-900 group-hover:text-blue-600 transition-colors duration-300">
-            H &bull; Studios
+            Qurevo Technologies
           </span>
         </Link>
 

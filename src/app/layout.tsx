@@ -10,26 +10,29 @@ export const viewport: Viewport = {
   maximumScale: 1,
 };
 
-// Comprehensive SEO Metadata
+// Comprehensive SEO Metadata for Qurevo Technologies
 export const metadata: Metadata = {
   title: {
-    default: "H Studios | Premium Web Development Agency in Kashmir",
-    template: "%s | H Studios"
+    default: "Qurevo Technologies | Best Web Development Company in Srinagar & Kashmir",
+    template: "%s | Qurevo Technologies"
   },
-  description: "H Studios is a top-tier web development agency based in Srinagar. We turn ideas into high-performance, fast, and modern websites that build your brand and scale your business.",
+  description: "Qurevo Technologies (formerly H Studios) is the premier web development company based in Srinagar, Kashmir. We turn ideas into high-performance, fast, and modern websites that build your brand and scale your business.",
   keywords: [
-    "Web Development Srinagar", 
+    "Qurevo",
+    "Qurevo Technologies",
+    "Best Web Development Company in Srinagar", 
+    "Best Web Development Company in Kashmir",
     "Website Design Kashmir", 
     "Next.js Agency", 
-    "H Studios", 
     "SEO Optimization", 
     "Ecommerce Development", 
     "Fintech Websites",
-    "Haadi Sabzar Lone"
+    "Haadi Sabzar Lone",
+    "hstudios" // Kept for legacy search traffic transition
   ],
   authors: [{ name: "Haadi Sabzar Lone" }],
   creator: "Haadi Sabzar Lone",
-  publisher: "H Studios",
+  publisher: "Qurevo Technologies",
   formatDetection: {
     email: false,
     address: false,
@@ -38,23 +41,23 @@ export const metadata: Metadata = {
   openGraph: {
     type: "website",
     locale: "en_US",
-    url: "https://hstudios.vercel.app", 
-    siteName: "H Studios",
-    title: "H Studios | Premium Web Development Agency",
+    url: "https://qurevo.vercel.app", // Update if you use a custom domain like qurevo.com
+    siteName: "Qurevo Technologies",
+    title: "Qurevo Technologies | Premium Web Development Agency",
     description: "High-performance websites that scale your digital footprint. Based in Srinagar, serving brands globally.",
     images: [
       {
-        url: "/logo.png",
+        url: "/logo.png", // Ensure you upload your new Qurevo logo here
         width: 800,
         height: 800,
-        alt: "H Studios Official Logo",
+        alt: "Qurevo Technologies Official Logo",
       },
     ],
   },
   twitter: {
     card: "summary_large_image",
-    title: "H Studios | Web Development Agency",
-    description: "We turn ideas into high-performance websites that build your brand.",
+    title: "Qurevo Technologies | Web Development Agency",
+    description: "We turn ideas into high-performance websites that build your brand. Top web development in Srinagar & Kashmir.",
     images: ["/logo.png"],
   },
   robots: {

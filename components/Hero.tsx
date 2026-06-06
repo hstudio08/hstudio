@@ -26,7 +26,7 @@ export default function Hero() {
           </h1>
 
           <p className="text-lg text-slate-600 max-w-xl leading-relaxed">
-            At H Studios, we turn ideas into high performance websites that are fast, modern and results driven.
+            At Qurevo Technologies, we turn ideas into high performance websites that are fast, modern and results driven.
           </p>
 
           <div className="flex flex-col sm:flex-row items-start sm:items-center space-y-3 sm:space-y-0 sm:space-x-4 pt-2">
@@ -67,7 +67,7 @@ export default function Hero() {
             <div className="z-10 animate-float mb-6">
               <Image 
                 src="/logo.png" 
-                alt="H Studios Logo" 
+                alt="Qurevo Technologies Logo" 
                 width={300} 
                 height={300} 
                 className="w-56 md:w-72 h-auto object-contain drop-shadow-2xl"
