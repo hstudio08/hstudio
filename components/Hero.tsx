@@ -12,7 +12,7 @@ export default function Hero() {
           {/* Badge using Familjen Grotesk for a crisp, modern UI feel */}
           <div className="flex items-center space-x-2 bg-blue-50/80 backdrop-blur-sm border border-blue-100 rounded-full px-4 py-1.5 shadow-sm font-['Familjen_Grotesk']">
             <span className="text-blue-600 text-[12px] font-bold uppercase tracking-widest flex items-center gap-2">
-              <span>🛡️</span> Trusted by 25+ Happy Clients
+              <span>🛡️</span> Trusted by 10+ Happy Clients
             </span>
           </div>
 
@@ -29,12 +29,7 @@ export default function Hero() {
             At Qurevo Technologies, we turn ideas into high performance websites that are fast, modern and results driven.
           </p>
 
-          <div className="flex flex-col sm:flex-row items-start sm:items-center space-y-3 sm:space-y-0 sm:space-x-4 pt-2">
-            <div className="flex -space-x-3">
-              {[1, 2, 3].map((img) => (
-                <div key={img} className="w-10 h-10 rounded-full border-2 border-white bg-slate-200 overflow-hidden shadow-sm" />
-              ))}
-            </div>
+          <div className="flex items-center space-x-6">
             <div className="flex flex-col">
               <div className="flex items-center space-x-1">
                 {[1, 2, 3, 4, 5].map((star) => (

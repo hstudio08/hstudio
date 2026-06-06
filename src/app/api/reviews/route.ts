@@ -1,9 +1,13 @@
 import { NextResponse } from 'next/server';
 import { GoogleGenAI } from '@google/genai';
-import { db } from '../../../../lib/firebase'; // Ensure this matches your firebase config path
+import { db } from '../../../../lib/firebase'; 
 import { collection, addDoc, serverTimestamp } from 'firebase/firestore';
 
-// Initialize the Gemini SDK
+// Check for API key on initialization
+if (!process.env.GEMINI_API_KEY) {
+  console.error("🚨 CRITICAL: GEMINI_API_KEY is missing in your environment variables!");
+}
+
 const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY as string });
 
 export async function POST(req: Request) {
@@ -14,27 +18,59 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: 'Missing required fields' }, { status: 400 });
     }
 
-    // Gemini AI Prompt for Toxicity & Sentiment Filtering
-    const prompt = `You are the strict moderation AI for Qurevo Technologies, a premium web development, SEO, and video editing agency based in Srinagar, Kashmir. Our founder and lead developer is Haadi Sabzar Lone.
+    // 1. LOG THE INCOMING REVIEW
+    console.log(`\n--- NEW REVIEW SUBMISSION ---`);
+    console.log(`👤 Name: ${name}`);
+    console.log(`⭐ Rating: ${rating}/5`);
+    console.log(`📝 Review: "${review}"`);
 
-Analyze the following customer review for our agency. 
+    // Hyper-strict prompt: ONLY allows glowing, positive praise. 
+    // Rejects everything else (even constructive criticism).
+    const prompt = `You are a strict moderation AI for Qurevo Technologies. 
+Analyze this review: "${review}"
+Star Rating Given: ${rating} out of 5.
 
-MODERATION RULES:
-1. ZERO TOLERANCE FOR TOXICITY: If the review contains ANY profanity, abusive language, hate speech, spam, promotional links, or is completely irrelevant to our services, strictly reply with "YES" (flags it for manual admin review and hides it).
-2. ALLOW GENUINE NEGATIVE FEEDBACK: If the review describes a real problem, constructive criticism, or a negative experience regarding our services, BUT uses clean, respectful, and appropriate language, strictly reply with "NO" (allows it to be published normally). Admin will manually hide it later if needed.
+RULES FOR REJECTION (Reply EXACTLY with "REJECT"):
+1. TOXICITY & SPAM: Contains profanity, abuse, hate speech, spam, or promotional links.
+2. LOW EFFORT: The review is extremely short, vague, or unhelpful (e.g., just the word "bad", "ok", "meh", or keyboard smash).
+3. NO CONSTRUCTIVE CRITICISM: ANY complaint, negative feedback, "mixed" feelings, or even polite/constructive criticism MUST be rejected. 
+4. LOW RATING: Any rating of 3 stars or lower MUST be rejected.
 
-Reply strictly with "YES" or "NO".
-Review text: "${review}"`;
+RULES FOR APPROVAL (Reply EXACTLY with "APPROVE"):
+1. PURE PRAISE ONLY: The review MUST be overwhelmingly positive, genuinely praising the services, and have a 4 or 5-star rating.
 
-    const response = await ai.models.generateContent({
-      model: 'gemini-2.5-flash',
-      contents: prompt,
-    });
+DO NOT output any other text, explanation, or punctuation. Output only "REJECT" or "APPROVE".`;
 
-    const aiAssessment = (response.text || '').trim().toUpperCase();
+    let status = 'pending'; // Default fallback status
     
-    // If Gemini says YES (toxic/negative), set to pending. Otherwise, auto-approve.
-    const status = aiAssessment.includes('YES') ? 'pending' : 'approved';
+    try {
+      console.log('🤖 Sending prompt to Gemini Flash Lite...');
+      
+      // Changed to the ultra-fast flash-lite model to speed up API response times
+      const response = await ai.models.generateContent({
+        model: 'gemini-2.5-flash-lite', 
+        contents: prompt,
+      });
+
+      const aiAssessment = (response.text || '').trim().toUpperCase();
+      
+      console.log(`🧠 Gemini Assessment Output: "${aiAssessment}"`);
+      
+      if (aiAssessment === 'APPROVE') {
+        status = 'approved';
+      } else if (aiAssessment === 'REJECT') {
+        status = 'pending'; // Flags for manual admin review
+      } else {
+         console.warn(`⚠️ Unexpected AI output, defaulting to pending.`);
+      }
+
+    } catch (aiError: any) {
+      console.error('❌ Gemini API call failed entirely:', aiError.message || aiError);
+      console.log('⚠️ Defaulting review status to "pending" due to AI failure.');
+    }
+
+    console.log(`✅ Final Decision: Saving to Firestore as -> [${status.toUpperCase()}]`);
+    console.log(`-----------------------------\n`);
 
     // Save to Firestore
     const docRef = await addDoc(collection(db, 'reviews'), {
@@ -55,8 +91,8 @@ Review text: "${review}"`;
         : 'Review published successfully!'
     });
 
-  } catch (error) {
-    console.error('Review submission error:', error);
-    return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
+  } catch (error: any) {
+    console.error('🔥 Severe Server Error:', error);
+    return NextResponse.json({ error: error.message || 'Internal Server Error' }, { status: 500 });
   }
 }

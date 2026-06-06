@@ -13,6 +13,7 @@ export const viewport: Viewport = {
 
 // Comprehensive SEO Metadata for Qurevo Technologies
 export const metadata: Metadata = {
+  metadataBase: new URL("https://qurevo.vercel.app"), // FIX: Added metadataBase to resolve Next.js warning
   title: {
     default: "Qurevo Technologies | Best Web Development Company in Srinagar & Kashmir",
     template: "%s | Qurevo Technologies"
