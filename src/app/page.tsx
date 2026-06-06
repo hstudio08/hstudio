@@ -5,6 +5,7 @@ import Pricing from "../../components/Pricing";
 import Contact from "../../components/Contact";
 import Footer from "../../components/Footer";
 import AboutUs from "../../components/AboutUs";
+import Reviews from "../../components/Reviews";
 
 // STRICT CACHING: Forces Next.js to serve this from CDN cache permanently until rebuilt
 export const dynamic = 'force-static';
@@ -49,6 +50,7 @@ export default function Home() {
         <Hero />
         <Projects />
         <Pricing />
+        <Reviews />
         <Contact />
         <Footer />
       </main>
