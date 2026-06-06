@@ -180,7 +180,7 @@ export default function Contact() {
 
             <div className="pt-6 md:pt-8 mt-8 md:mt-12 border-t border-slate-200/40">
               <div className="flex items-center space-x-3 md:space-x-4 text-xs md:text-sm text-slate-800 font-bold mb-4 md:mb-5">
-                <span className="w-8 h-8 md:w-10 md:h-10 rounded-full bg-white shadow-sm md:shadow-md flex items-center justify-center text-blue-500 border border-slate-50">✓</span>
+                <span className="w-8 h-8 md:w-10 md:h-10 rounded-full bg-white shadow-sm md:shadow-md flex items-center justify-center text-blue-500 border border-slate-50">🛡️</span>
                 <span className="drop-shadow-sm">Secure OTP Verification</span>
               </div>
               <div className="flex items-center space-x-3 md:space-x-4 text-xs md:text-sm text-slate-800 font-bold">

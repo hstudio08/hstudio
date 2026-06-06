@@ -9,6 +9,9 @@ const nextConfig = {
     ],
   },
   async headers() {
+    // Prevent aggressive caching during local development to stop hydration errors
+    if (process.env.NODE_ENV !== 'production') return [];
+
     return [
       {
         source: '/:all*(svg|jpg|png|webp|avif|woff2)',

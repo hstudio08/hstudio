@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect, useRef } from 'react';
 import Image from 'next/image';
+import { MagicContainer, MagicCard } from '../effects/MagicBento';
 
 const ScrollReveal = ({ children, delay = 0 }: { children: React.ReactNode, delay?: number }) => {
   const [inView, setInView] = useState(false);
@@ -106,7 +107,7 @@ export default function Projects() {
       className={`py-12 md:py-20 overflow-hidden transition-colors duration-1000 ease-in-out ${sectionInView ? 'bg-slate-50/80' : 'bg-white'}`}
       aria-labelledby="projects-heading"
     >
-      <div className="max-w-[96rem] mx-auto px-4 sm:px-6 md:px-8">
+      <MagicContainer glowColor="166, 247, 208" spotlightRadius={500} className="max-w-[96rem] mx-auto px-4 sm:px-6 md:px-8">
         
         <ScrollReveal>
           <div className="text-center flex flex-col items-center space-y-2 md:space-y-3 mb-10 md:mb-16">
@@ -125,10 +126,13 @@ export default function Projects() {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-10">
           {showcase.map((project, index) => (
             <ScrollReveal key={index} delay={index * 100}>
-              <article className="group relative flex flex-col bg-white border border-slate-100 rounded-3xl md:rounded-[2rem] overflow-hidden transition-all duration-700 hover:shadow-[0_20px_40px_rgba(224,166,247,0.15)] hover:-translate-y-2 md:hover:-translate-y-3 hover:border-[#bff0f5]/80 h-full z-10">
+              <MagicCard 
+                glowColor="191, 240, 245" 
+                className="group flex flex-col bg-white border border-slate-100 rounded-3xl md:rounded-[2rem] h-full z-10 p-0 hover:shadow-[0_20px_40px_rgba(224,166,247,0.15)] hover:-translate-y-2 md:hover:-translate-y-3"
+              >
                 <div className="absolute inset-0 bg-gradient-to-br from-[#bff0f5]/10 via-transparent to-[#e0a6f7]/10 opacity-0 group-hover:opacity-100 transition-opacity duration-700 pointer-events-none z-0" />
 
-                <div className="h-48 sm:h-56 md:h-64 relative flex flex-col justify-between overflow-hidden p-5 md:p-6 z-10">
+                <div className="h-48 sm:h-56 md:h-64 relative flex flex-col justify-between overflow-hidden p-5 md:p-6 z-10 rounded-t-3xl md:rounded-t-[2rem]">
                   <Image 
                     src={project.image}
                     alt={`Screenshot of ${project.title} website`}
@@ -153,12 +157,12 @@ export default function Projects() {
                     </p>
                   </div>
                   
-                  <a href={project.link} target="_blank" rel="noopener noreferrer" aria-label={`Visit ${project.title} external website`} className="text-[10px] md:text-xs font-bold text-blue-600 flex items-center space-x-1.5 mt-auto pt-3 md:pt-4 transition-all duration-300 group-hover:text-[#e0a6f7] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-600 rounded">
+                  <a href={project.link} target="_blank" rel="noopener noreferrer" aria-label={`Visit ${project.title} external website`} className="text-[10px] md:text-xs font-bold text-blue-600 flex items-center space-x-1.5 mt-auto pt-3 md:pt-4 transition-all duration-300 group-hover:text-[#e0a6f7] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-600 rounded w-max">
                     <span className="uppercase tracking-widest">Visit Website</span>
                     <span aria-hidden="true" className="transform transition-transform duration-500 group-hover:translate-x-2 group-hover:-translate-y-0.5 text-base md:text-lg">↗</span>
                   </a>
                 </div>
-              </article>
+              </MagicCard>
             </ScrollReveal>
           ))}
         </div>
@@ -180,29 +184,34 @@ export default function Projects() {
 
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 md:gap-10 items-stretch relative z-10">
               
-              <div className="lg:col-span-5 bg-gradient-to-br from-slate-900 to-slate-950 rounded-2xl md:rounded-3xl p-6 sm:p-8 md:p-10 text-white shadow-xl md:shadow-2xl relative overflow-hidden flex flex-col justify-center transition-transform duration-700 hover:scale-[1.02]">
-                <div className="absolute top-0 right-0 w-32 h-32 md:w-48 md:h-48 bg-[#a7fcfb]/15 rounded-full blur-2xl md:blur-3xl -translate-y-1/2 translate-x-1/3"></div>
-                <div className="absolute bottom-0 left-0 w-32 h-32 md:w-48 md:h-48 bg-[#e0a6f7]/15 rounded-full blur-2xl md:blur-3xl translate-y-1/2 -translate-x-1/2"></div>
-                
-                <div className="relative z-10">
-                  <h4 className="text-[10px] md:text-[11px] font-black uppercase tracking-widest text-[#a7fcfb] mb-4 md:mb-6 font-['Familjen_Grotesk']">
-                    Founder&apos;s Note
-                  </h4>
-                  <p className="text-lg md:text-2xl text-[#bff0f5]/90 leading-relaxed md:leading-relaxed mb-6 md:mb-10 font-['Story_Script']">
-                    &ldquo;At <strong className="text-white font-['Satisfy'] text-xl md:text-3xl mx-1 font-normal tracking-wide">H &bull; Studios</strong>, we don&apos;t just build websites; we craft digital experiences that capture the soul of your brand. Seeing our clients thrive online is what drives our relentless pursuit of perfection.&rdquo;
-                  </p>
-                  <div className="flex items-center space-x-3 md:space-x-4">
-                    <div className="w-10 h-10 md:w-12 md:h-12 rounded-full bg-gradient-to-tr from-[#a6f7d0] to-[#e0a6f7] p-[2px] shadow-lg flex-shrink-0">
-                      <div className="w-full h-full bg-slate-800 rounded-full overflow-hidden relative flex items-center justify-center">
-                        <Image src="/logo.png" alt="Portrait of Haadi Sabzar Lone, Founder" width={24} height={24} className="object-contain w-5 md:w-6 h-auto" />
+              <div className="lg:col-span-5 h-full">
+                <MagicCard 
+                  glowColor="224, 166, 247" 
+                  className="bg-gradient-to-br from-slate-900 to-slate-950 rounded-2xl md:rounded-3xl p-6 sm:p-8 md:p-10 text-white shadow-xl md:shadow-2xl flex flex-col justify-center h-full border-none transition-transform duration-700 hover:scale-[1.02]"
+                >
+                  <div className="absolute top-0 right-0 w-32 h-32 md:w-48 md:h-48 bg-[#a7fcfb]/15 rounded-full blur-2xl md:blur-3xl -translate-y-1/2 translate-x-1/3"></div>
+                  <div className="absolute bottom-0 left-0 w-32 h-32 md:w-48 md:h-48 bg-[#e0a6f7]/15 rounded-full blur-2xl md:blur-3xl translate-y-1/2 -translate-x-1/2"></div>
+                  
+                  <div className="relative z-10">
+                    <h4 className="text-[10px] md:text-[11px] font-black uppercase tracking-widest text-[#a7fcfb] mb-4 md:mb-6 font-['Familjen_Grotesk']">
+                      Founder&apos;s Note
+                    </h4>
+                    <p className="text-lg md:text-2xl text-[#bff0f5]/90 leading-relaxed md:leading-relaxed mb-6 md:mb-10 font-['Story_Script']">
+                      &ldquo;At <strong className="text-white font-['Satisfy'] text-xl md:text-3xl mx-1 font-normal tracking-wide">H &bull; Studios</strong>, we don&apos;t just build websites; we craft digital experiences that capture the soul of your brand. Seeing our clients thrive online is what drives our relentless pursuit of perfection.&rdquo;
+                    </p>
+                    <div className="flex items-center space-x-3 md:space-x-4">
+                      <div className="w-10 h-10 md:w-12 md:h-12 rounded-full bg-gradient-to-tr from-[#a6f7d0] to-[#e0a6f7] p-[2px] shadow-lg flex-shrink-0">
+                        <div className="w-full h-full bg-slate-800 rounded-full overflow-hidden relative flex items-center justify-center">
+                          <Image src="/logo.png" alt="Portrait of Haadi Sabzar Lone, Founder" width={24} height={24} className="object-contain w-5 md:w-6 h-auto" />
+                        </div>
+                      </div>
+                      <div>
+                        <p className="text-sm md:text-base font-black text-white tracking-tight">Haadi Sabzar Lone</p>
+                        <p className="text-[10px] md:text-xs text-[#bff0f5]/70 font-bold uppercase tracking-wider mt-0.5 font-['Familjen_Grotesk']">Founder</p>
                       </div>
                     </div>
-                    <div>
-                      <p className="text-sm md:text-base font-black text-white tracking-tight">Haadi Sabzar Lone</p>
-                      <p className="text-[10px] md:text-xs text-[#bff0f5]/70 font-bold uppercase tracking-wider mt-0.5 font-['Familjen_Grotesk']">Founder</p>
-                    </div>
                   </div>
-                </div>
+                </MagicCard>
               </div>
 
               <div className="lg:col-span-7 space-y-4 md:space-y-6 flex flex-col justify-center">
@@ -220,7 +229,11 @@ export default function Projects() {
                     quote: "Our online presence is now as shining as our brand. They delivered a platform that truly reflects the exquisite service we are known for." 
                   }
                 ].map((client, i) => (
-                  <article key={i} className="bg-white border border-slate-100 p-5 md:p-8 rounded-[1.5rem] md:rounded-[2rem] shadow-[0_2px_10px_rgba(0,0,0,0.02)] hover:shadow-[0_15px_40px_rgba(191,240,245,0.3)] transition-all duration-500 group hover:-translate-y-1 relative overflow-hidden">
+                  <MagicCard 
+                    key={i} 
+                    glowColor="166, 247, 208" 
+                    className="bg-white border border-slate-100 p-5 md:p-8 rounded-[1.5rem] md:rounded-[2rem] shadow-[0_2px_10px_rgba(0,0,0,0.02)] hover:shadow-[0_15px_40px_rgba(191,240,245,0.3)] transition-all duration-500 group hover:-translate-y-1 relative overflow-hidden"
+                  >
                     <div className="absolute inset-0 bg-gradient-to-r from-transparent to-[#bff0f5]/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" />
                     
                     <div className="flex items-center space-x-3 md:space-x-5 mb-3 md:mb-5 relative z-10">
@@ -241,7 +254,7 @@ export default function Projects() {
                     <p className="text-sm md:text-[15px] text-slate-600 italic leading-relaxed relative z-10 font-medium group-hover:text-slate-800 transition-colors duration-300">
                       &ldquo;{client.quote}&rdquo;
                     </p>
-                  </article>
+                  </MagicCard>
                 ))}
               </div>
 
@@ -254,19 +267,24 @@ export default function Projects() {
                 { val: 100, label: "Satisfaction", suffix: "%" },
                 { val: 2, label: "Years Experience", suffix: "+" }
               ].map((metric, i) => (
-                <div key={i} className="flex flex-col items-center justify-center p-4 md:p-6 bg-slate-50/50 rounded-2xl md:rounded-3xl border border-slate-100/50 shadow-sm transition-all duration-500 hover:-translate-y-1 md:hover:-translate-y-2 hover:shadow-[0_10px_30px_rgba(224,166,247,0.2)] hover:bg-white group cursor-default">
+                <MagicCard 
+                  key={i} 
+                  glowColor="191, 240, 245" 
+                  enableTilt={false}
+                  className="flex flex-col items-center justify-center p-4 md:p-6 bg-slate-50/50 rounded-2xl md:rounded-3xl border border-slate-100/50 shadow-sm transition-all duration-500 hover:-translate-y-1 md:hover:-translate-y-2 hover:shadow-[0_10px_30px_rgba(224,166,247,0.2)] hover:bg-white group cursor-default"
+                >
                   <span className="text-3xl sm:text-4xl md:text-5xl font-black text-transparent bg-clip-text bg-gradient-to-r from-slate-900 to-slate-700 group-hover:from-[#e0a6f7] group-hover:to-blue-600 transition-all duration-500 drop-shadow-sm" aria-label={`${metric.val}${metric.suffix}`}>
                     <AnimatedCounter end={metric.val} suffix={metric.suffix} />
                   </span>
                   <span className="text-[10px] md:text-xs text-slate-500 font-bold uppercase tracking-wider mt-1.5 md:mt-3 font-['Familjen_Grotesk'] group-hover:text-slate-800 transition-colors duration-500">{metric.label}</span>
-                </div>
+                </MagicCard>
               ))}
             </div>
 
           </div>
         </ScrollReveal>
 
-      </div>
+      </MagicContainer>
     </section>
   );
 }
