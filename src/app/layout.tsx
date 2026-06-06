@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import ClickSpark from "../../effects/ClickSpark";
+import FireSparks from "../../effects/FireSparks"; 
 import "./globals.css";
 
 // Viewport configuration for mobile optimization and theme colors
@@ -41,13 +42,13 @@ export const metadata: Metadata = {
   openGraph: {
     type: "website",
     locale: "en_US",
-    url: "https://qurevo.vercel.app", // Update if you use a custom domain like qurevo.com
+    url: "https://qurevo.vercel.app", 
     siteName: "Qurevo Technologies",
     title: "Qurevo Technologies | Premium Web Development Agency",
     description: "High-performance websites that scale your digital footprint. Based in Srinagar, serving brands globally.",
     images: [
       {
-        url: "/logo.png", // Ensure you upload your new Qurevo logo here
+        url: "/logo.png", 
         width: 800,
         height: 800,
         alt: "Qurevo Technologies Official Logo",
@@ -87,7 +88,7 @@ export default function RootLayout({
         <link href="https://fonts.googleapis.com/css2?family=Familjen+Grotesk:ital,wght@0,400..700;1,400..700&family=Satisfy&display=swap" rel="stylesheet" />
         <link href="https://fonts.googleapis.com/css2?family=Foldit:wght@100..900&family=Story+Script&display=swap" rel="stylesheet" />
       </head>
-      <body className="antialiased bg-slate-50 text-slate-900 selection:bg-blue-500 selection:text-white flex flex-col min-h-screen">
+      <body className="antialiased bg-slate-50 text-slate-900 selection:bg-blue-500 selection:text-white flex flex-col min-h-screen relative overflow-x-hidden">
         
         {/* Global Click Spark Overlay */}
         <ClickSpark 
@@ -95,6 +96,9 @@ export default function RootLayout({
           sparkCount={10} 
           sparkRadius={25} 
         />
+        
+        {/* Global Fire Sparks Background */}
+        <FireSparks/>
         
         {children}
         

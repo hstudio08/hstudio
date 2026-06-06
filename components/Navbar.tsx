@@ -38,7 +38,7 @@ export default function Navbar() {
           ? 'max-w-5xl px-6 py-3 bg-[#e2f2d0]/95 backdrop-blur-xl shadow-[0_8px_30px_rgb(0,0,0,0.08)] border-white/40 translate-y-0' 
           : 'max-w-[96rem] px-8 py-4 bg-[#e2f2d0]/80 backdrop-blur-md shadow-sm border-white/20'}`}
       >
-        {/* Logo - Added nav-target for magnet effect */}
+        {/* Logo */}
         <Link href="/" className="nav-target flex items-center space-x-3 group outline-none rounded-lg p-1" aria-label="Qurevo Technologies Home">
           <Image 
             src="/logo.png" 
@@ -53,13 +53,13 @@ export default function Navbar() {
           </span>
         </Link>
 
-        {/* Desktop Navigation Links - Added nav-target for magnet effect */}
+        {/* Desktop Navigation Links - Updated Font & Uppercase */}
         <div className="hidden md:flex items-center space-x-10">
           {navLinks.map((item) => (
             <Link
               key={item.name}
               href={item.href}
-              className="nav-target text-sm font-semibold text-slate-800 hover:text-blue-600 transition-colors duration-200 relative group outline-none"
+              className="nav-target text-xs font-black uppercase tracking-widest text-slate-800 hover:text-blue-600 transition-colors duration-200 relative group outline-none font-['Familjen_Grotesk']"
             >
               {item.name}
               <span className="absolute -bottom-1 left-0 w-0 h-[2px] bg-blue-600 transition-all duration-300 group-hover:w-full rounded-full" />
@@ -67,18 +67,18 @@ export default function Navbar() {
           ))}
         </div>
 
-        {/* Action Button - Added nav-target for magnet effect */}
+        {/* Action Button - Updated Font & Uppercase */}
         <div className="hidden md:block">
           <Link 
             href="#book" 
-            className="nav-target bg-blue-600 hover:bg-blue-700 text-white font-semibold text-sm px-6 py-2.5 rounded-full flex items-center space-x-2 transition-all duration-300 hover:shadow-lg hover:shadow-blue-600/20 transform hover:-translate-y-0.5 outline-none"
+            className="nav-target bg-blue-600 hover:bg-blue-700 text-white font-black uppercase tracking-widest text-[10px] md:text-xs px-6 py-3 rounded-full flex items-center space-x-2 transition-all duration-300 hover:shadow-lg hover:shadow-blue-600/20 transform hover:-translate-y-0.5 outline-none font-['Familjen_Grotesk']"
           >
             <span>Book Website</span>
-            <span aria-hidden="true">→</span>
+            <span aria-hidden="true" className="text-sm">→</span>
           </Link>
         </div>
 
-        {/* Mobile Menu Toggle - Added nav-target */}
+        {/* Mobile Menu Toggle */}
         <button 
           className="nav-target md:hidden p-2 text-slate-900 outline-none"
           onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
@@ -94,26 +94,31 @@ export default function Navbar() {
         </button>
       </nav>
 
-      {/* Mobile Dropdown */}
+      {/* Mobile Dropdown - ADDED pointer-events-auto SO CLICKS REGISTER! */}
       {mobileMenuOpen && (
-        <div className="md:hidden absolute top-24 left-4 right-4 bg-[#e2f2d0]/95 backdrop-blur-xl border border-white/50 rounded-3xl p-6 shadow-2xl z-40 flex flex-col space-y-4">
-          {navLinks.map((link) => (
-            <Link 
-              key={link.name} 
-              href={link.href} 
-              onClick={() => setMobileMenuOpen(false)}
-              className="nav-target text-lg font-bold text-slate-900 block"
-            >
-              {link.name}
-            </Link>
-          ))}
+        <div className="md:hidden absolute top-24 left-4 right-4 bg-[#e2f2d0]/95 backdrop-blur-xl border border-white/50 rounded-3xl p-6 shadow-2xl z-40 flex flex-col space-y-5 pointer-events-auto">
+          
+          <div className="flex flex-col space-y-4 border-b border-white/40 pb-4">
+            {navLinks.map((link) => (
+              <Link 
+                key={link.name} 
+                href={link.href} 
+                onClick={() => setMobileMenuOpen(false)}
+                className="nav-target text-[15px] font-black text-slate-900 block uppercase tracking-widest font-['Familjen_Grotesk'] hover:text-blue-600 transition-colors"
+              >
+                {link.name}
+              </Link>
+            ))}
+          </div>
+
           <Link 
             href="#book"
             onClick={() => setMobileMenuOpen(false)}
-            className="nav-target bg-blue-600 text-white font-bold text-center py-3 rounded-full"
+            className="nav-target bg-blue-600 text-white font-black text-center py-3.5 rounded-full uppercase tracking-widest text-sm shadow-md shadow-blue-600/20 font-['Familjen_Grotesk']"
           >
             Book Website
           </Link>
+          
         </div>
       )}
     </header>
