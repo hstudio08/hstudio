@@ -1,6 +1,5 @@
 import type { Metadata, Viewport } from "next";
 import ClickSpark from "../../effects/ClickSpark";
-import TargetCursor from "../../effects/TargetCursor";
 import "./globals.css";
 
 // Viewport configuration for mobile optimization and theme colors
@@ -92,13 +91,6 @@ export default function RootLayout({
           sparkColors={['#10B981', '#3B82F6', '#F97316']}
           sparkCount={10} 
           sparkRadius={25} 
-        />
-
-        {/* Global Target Cursor for Navbar snapping */}
-        <TargetCursor 
-          targetSelector=".nav-target" 
-          hideDefaultCursor={true}
-          hoverDuration={0.01} 
         />
         
         {children}
