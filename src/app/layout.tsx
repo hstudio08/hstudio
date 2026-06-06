@@ -37,7 +37,7 @@ export const metadata: Metadata = {
   openGraph: {
     type: "website",
     locale: "en_US",
-    url: "https://yourwebsite.com", // TODO: Replace with your actual live domain
+    url: "https://hstudios.vercel.app", // TODO: Replace with your actual live domain
     siteName: "H Studios",
     title: "H Studios | Premium Web Development Agency",
     description: "High-performance websites that scale your digital footprint. Based in Srinagar, serving brands globally.",

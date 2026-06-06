@@ -21,7 +21,6 @@ export default function Contact() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [pulseHighlight, setPulseHighlight] = useState(false);
 
-  // Listen for package preselection from Pricing component
   useEffect(() => {
     const handlePreselect = (e: any) => {
       setFormData(prev => ({ ...prev, packageType: e.detail }));
@@ -33,7 +32,6 @@ export default function Contact() {
     return () => window.removeEventListener('preselectPackage', handlePreselect);
   }, []);
 
-  // Calculate filled fields for background animation and bucket progress
   const filledFields = useMemo(() => {
     let count = 0;
     if (formData.name.trim().length > 0) count++;
@@ -125,7 +123,6 @@ export default function Contact() {
   return (
     <section id="book" className="pt-16 md:pt-24 pb-8 md:pb-12 bg-slate-50 overflow-hidden flex flex-col relative z-0">
       
-      {/* Custom Keyframes for the 'Book Now' Button Animation */}
       <style dangerouslySetInnerHTML={{__html: `
         @keyframes shimmer-sweep {
           0% { transform: translateX(-150%); }
@@ -135,39 +132,25 @@ export default function Contact() {
           0%, 100% { transform: translateX(0); }
           50% { transform: translateX(5px); }
         }
-        .animate-shimmer-sweep {
-          animation: shimmer-sweep 2.5s infinite linear;
-        }
-        .animate-bounce-horizontal {
-          animation: bounce-horizontal 1.5s infinite ease-in-out;
-        }
+        .animate-shimmer-sweep { animation: shimmer-sweep 2.5s infinite linear; }
+        .animate-bounce-horizontal { animation: bounce-horizontal 1.5s infinite ease-in-out; }
       `}} />
 
-      {/* Page Ambient Glow */}
       <div className="absolute top-0 right-0 w-full h-96 bg-gradient-to-b from-white to-transparent pointer-events-none z-0" />
 
       <div className="max-w-[96rem] mx-auto px-3 sm:px-6 md:px-8 w-full relative z-10">
         
-        {/* ============================================================== */}
-        {/* PREMIUM CONTAINER (Mobile Optimized Sizing) */}
-        {/* ============================================================== */}
         <div className="relative rounded-[2rem] md:rounded-[3rem] p-5 sm:p-8 md:p-14 shadow-[0_20px_50px_-10px_rgba(0,0,0,0.06)] md:shadow-[0_30px_80px_-20px_rgba(0,0,0,0.08)] border border-white/60 bg-white/40 backdrop-blur-3xl overflow-hidden grid grid-cols-1 lg:grid-cols-12 gap-8 md:gap-12 lg:gap-16 items-stretch">
           
-          {/* Animated Background Mesh Inside the Container */}
           <div className="absolute inset-0 z-0 pointer-events-none overflow-hidden rounded-[2rem] md:rounded-[3rem]">
             <div className="absolute inset-0 bg-white/20 transition-opacity duration-1000" />
-            
-            {/* Smooth shifting color orbs */}
             <div className={`absolute -top-[20%] -left-[10%] w-[100%] md:w-[70%] h-[70%] rounded-full bg-gradient-to-br from-[#bff0f5]/80 to-transparent blur-[60px] md:blur-[80px] transition-all duration-[2000ms] ease-in-out ${filledFields >= 1 ? 'opacity-100 scale-110 translate-x-5 md:translate-x-10' : 'opacity-40 scale-100'}`} />
             <div className={`absolute -bottom-[20%] -right-[10%] w-[100%] md:w-[70%] h-[70%] rounded-full bg-gradient-to-tl from-[#e0a6f7]/60 to-transparent blur-[60px] md:blur-[80px] transition-all duration-[2000ms] ease-in-out ${filledFields >= 2 ? 'opacity-100 scale-125 -translate-y-5 md:-translate-y-10' : 'opacity-0 scale-90'}`} />
             <div className={`absolute top-[30%] left-[10%] md:left-[20%] w-[80%] md:w-[60%] h-[60%] rounded-full bg-gradient-to-tr from-[#a6f7d0]/60 to-transparent blur-[60px] md:blur-[80px] transition-all duration-[2000ms] ease-in-out ${filledFields >= 3 ? 'opacity-100 scale-110 translate-x-5 md:translate-x-10' : 'opacity-0 scale-50'}`} />
             <div className={`absolute inset-0 bg-gradient-to-b from-white/10 via-transparent to-[#bff0f5]/30 transition-opacity duration-1000 ${filledFields >= 4 ? 'opacity-100' : 'opacity-0'}`} />
           </div>
 
-
-          {/* --- Left Column: Branding & Fluid Bucket --- */}
           <div className="lg:col-span-5 flex flex-col relative z-10 h-full justify-between">
-            
             <div className="flex items-start justify-between">
               <div>
                 <div className="w-14 h-14 md:w-20 md:h-20 rounded-xl md:rounded-[1.5rem] bg-white shadow-[0_6px_20px_rgba(0,0,0,0.05)] mb-5 md:mb-8 flex items-center justify-center border border-slate-100 transform hover:scale-105 transition-transform duration-500">
@@ -179,8 +162,7 @@ export default function Contact() {
                 </p>
               </div>
 
-              {/* Realistic Fluid Bucket Animation (Visible on MD and up to save space on mobile) */}
-              <div className="hidden md:flex flex-col items-center mt-4">
+              <div className="hidden md:flex flex-col items-center mt-4" aria-hidden="true">
                 <div className="relative w-16 h-32 border-4 border-white bg-white/20 backdrop-blur-md rounded-b-2xl rounded-t-sm shadow-[0_10px_30px_rgba(0,0,0,0.05),inset_0_-10px_20px_rgba(255,255,255,0.8)] overflow-hidden">
                   <div className="absolute top-0 left-0 right-0 h-1.5 bg-white z-20" />
                   <div 
@@ -208,42 +190,62 @@ export default function Contact() {
             </div>
           </div>
 
-          {/* --- Right Column: The "Exceptions" (Inputs) --- */}
+          {/* Right Column: Accessible Form */}
           <div className="lg:col-span-7 relative z-10">
-            <form className="space-y-4 md:space-y-6" onSubmit={handleSubmit}>
+            {/* Screen Reader Announcer for OTP Status */}
+            <div aria-live="polite" className="sr-only">
+              {otpStatus === 'sending' && "Sending verification code."}
+              {otpStatus === 'sent' && "Verification code sent to your email."}
+              {otpStatus === 'verifying' && "Verifying your code."}
+              {otpStatus === 'verified' && "Email successfully verified."}
+            </div>
+
+            <form className="space-y-4 md:space-y-6" onSubmit={handleSubmit} noValidate>
               
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 md:gap-6">
-                <input 
-                  type="text" 
-                  name="name"
-                  value={formData.name}
-                  onChange={handleChange}
-                  required
-                  placeholder="Your Full Name" 
-                  className="w-full bg-white text-slate-900 placeholder-slate-400 text-sm md:text-base font-medium rounded-xl md:rounded-2xl px-4 py-3 md:px-5 md:py-4 outline-none border border-white shadow-[0_4px_15px_rgba(0,0,0,0.03)] focus:shadow-[0_8px_25px_rgba(166,247,208,0.5)] focus:border-[#a6f7d0] transition-all duration-300"
-                />
-                <input 
-                  type="tel" 
-                  name="phone"
-                  value={formData.phone}
-                  onChange={handleChange}
-                  required
-                  placeholder="Phone Number" 
-                  className="w-full bg-white text-slate-900 placeholder-slate-400 text-sm md:text-base font-medium rounded-xl md:rounded-2xl px-4 py-3 md:px-5 md:py-4 outline-none border border-white shadow-[0_4px_15px_rgba(0,0,0,0.03)] focus:shadow-[0_8px_25px_rgba(166,247,208,0.5)] focus:border-[#a6f7d0] transition-all duration-300"
-                />
+                <div>
+                  <label htmlFor="name" className="sr-only">Your Full Name</label>
+                  <input 
+                    id="name"
+                    type="text" 
+                    name="name"
+                    value={formData.name}
+                    onChange={handleChange}
+                    required
+                    aria-required="true"
+                    placeholder="Your Full Name" 
+                    className="w-full bg-white text-slate-900 placeholder-slate-400 text-sm md:text-base font-medium rounded-xl md:rounded-2xl px-4 py-3 md:px-5 md:py-4 outline-none border border-white shadow-[0_4px_15px_rgba(0,0,0,0.03)] focus:shadow-[0_8px_25px_rgba(166,247,208,0.5)] focus:border-[#a6f7d0] transition-all duration-300 focus-visible:ring-4 focus-visible:ring-[#a6f7d0]/40"
+                  />
+                </div>
+                <div>
+                  <label htmlFor="phone" className="sr-only">Phone Number</label>
+                  <input 
+                    id="phone"
+                    type="tel" 
+                    name="phone"
+                    value={formData.phone}
+                    onChange={handleChange}
+                    required
+                    aria-required="true"
+                    placeholder="Phone Number" 
+                    className="w-full bg-white text-slate-900 placeholder-slate-400 text-sm md:text-base font-medium rounded-xl md:rounded-2xl px-4 py-3 md:px-5 md:py-4 outline-none border border-white shadow-[0_4px_15px_rgba(0,0,0,0.03)] focus:shadow-[0_8px_25px_rgba(166,247,208,0.5)] focus:border-[#a6f7d0] transition-all duration-300 focus-visible:ring-4 focus-visible:ring-[#a6f7d0]/40"
+                  />
+                </div>
               </div>
 
-              {/* Package Dropdown */}
               <div className="relative">
+                <label htmlFor="packageType" className="sr-only">Select Package</label>
                 <select 
+                  id="packageType"
                   name="packageType"
                   value={formData.packageType}
                   onChange={handleChange}
                   required
-                  className={`w-full appearance-none cursor-pointer rounded-xl md:rounded-2xl px-4 py-3 md:px-5 md:py-4 text-sm md:text-base font-bold outline-none border transition-all duration-300
+                  aria-required="true"
+                  className={`w-full appearance-none cursor-pointer rounded-xl md:rounded-2xl px-4 py-3 md:px-5 md:py-4 text-sm md:text-base font-bold outline-none border transition-all duration-300 focus-visible:ring-4
                     ${pulseHighlight 
                       ? 'bg-white shadow-[0_8px_25px_rgba(224,166,247,0.5)] border-[#e0a6f7] text-blue-600 scale-[1.01]' 
-                      : 'bg-white text-slate-800 shadow-[0_4px_15px_rgba(0,0,0,0.03)] border-white focus:shadow-[0_8px_25px_rgba(224,166,247,0.5)] focus:border-[#e0a6f7]'
+                      : 'bg-white text-slate-800 shadow-[0_4px_15px_rgba(0,0,0,0.03)] border-white focus:shadow-[0_8px_25px_rgba(224,166,247,0.5)] focus:border-[#e0a6f7] focus-visible:ring-[#e0a6f7]/40'
                     }
                   `}
                 >
@@ -256,27 +258,30 @@ export default function Contact() {
                 <div className={`absolute right-4 md:right-5 top-1/2 -translate-y-1/2 pointer-events-none transition-colors font-bold text-xs md:text-sm ${pulseHighlight ? 'text-blue-600' : 'text-slate-400'}`}>▼</div>
               </div>
 
-              {/* Email & Fast OTP Block */}
               <div className="p-1.5 md:p-2 rounded-[1rem] md:rounded-[1.25rem] bg-white shadow-[0_4px_15px_rgba(0,0,0,0.03)] border border-white relative overflow-hidden transition-all duration-500">
                 {otpStatus === 'verified' && <div className="absolute inset-0 bg-[#a6f7d0]/10 pointer-events-none" />}
                 
                 <div className="flex flex-col sm:flex-row gap-1.5 md:gap-2 relative z-10">
+                  <label htmlFor="email" className="sr-only">Email Address</label>
                   <input 
+                    id="email"
                     type="email" 
                     name="email"
                     value={formData.email}
                     onChange={handleChange}
                     disabled={otpStatus === 'verified'}
                     required
+                    aria-required="true"
                     placeholder="Your Email Address" 
-                    className="flex-1 bg-transparent px-3 py-2.5 md:px-4 md:py-3 text-sm font-medium text-slate-900 placeholder-slate-400 outline-none transition-all disabled:opacity-60"
+                    className="flex-1 bg-transparent px-3 py-2.5 md:px-4 md:py-3 text-sm font-medium text-slate-900 placeholder-slate-400 outline-none transition-all disabled:opacity-60 focus-visible:ring-2 focus-visible:ring-[#bff0f5] rounded-lg"
                   />
                   
                   {otpStatus !== 'verified' && (
                     <button 
                       onClick={handleSendOTP}
                       disabled={otpStatus === 'sending' || otpStatus === 'verifying'}
-                      className="whitespace-nowrap bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs px-5 py-3 md:px-6 md:py-3.5 rounded-lg md:rounded-xl transition-all shadow-md disabled:opacity-50 flex items-center justify-center min-w-[100px] md:min-w-[120px]"
+                      aria-busy={otpStatus === 'sending'}
+                      className="whitespace-nowrap bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs px-5 py-3 md:px-6 md:py-3.5 rounded-lg md:rounded-xl transition-all shadow-md disabled:opacity-50 flex items-center justify-center min-w-[100px] md:min-w-[120px] focus-visible:ring-4 focus-visible:ring-slate-900/40 outline-none"
                     >
                       {otpStatus === 'sending' ? (
                         <svg className="animate-spin h-3 w-3 md:h-4 md:w-4 text-white" fill="none" viewBox="0 0 24 24"><circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle><path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
@@ -285,7 +290,7 @@ export default function Contact() {
                   )}
                   
                   {otpStatus === 'verified' && (
-                    <div className="flex items-center justify-center px-5 py-3 md:px-6 md:py-3.5 rounded-lg md:rounded-xl bg-[#a6f7d0]/30 text-teal-800 font-extrabold text-xs border border-[#a6f7d0]/50 shadow-sm">
+                    <div className="flex items-center justify-center px-5 py-3 md:px-6 md:py-3.5 rounded-lg md:rounded-xl bg-[#a6f7d0]/30 text-teal-800 font-extrabold text-xs border border-[#a6f7d0]/50 shadow-sm" aria-label="Email Verified">
                       ✓ Verified
                     </div>
                   )}
@@ -293,7 +298,9 @@ export default function Contact() {
 
                 <div className={`transition-all duration-300 ease-out overflow-hidden px-1.5 md:px-2 ${otpStatus === 'sent' || otpStatus === 'verifying' ? 'max-h-24 opacity-100 pb-1.5 pt-1 mt-1' : 'max-h-0 opacity-0 pb-0 pt-0 mt-0'}`}>
                   <div className="flex gap-2 md:gap-3 relative z-10">
+                    <label htmlFor="otpCode" className="sr-only">OTP Code</label>
                     <input 
+                      id="otpCode"
                       type="text" 
                       placeholder="6-digit OTP" 
                       value={otpCode}
@@ -303,7 +310,8 @@ export default function Contact() {
                     <button 
                       onClick={handleVerifyOTP}
                       disabled={otpCode.length < 4 || otpStatus === 'verifying'}
-                      className="bg-blue-600 hover:bg-blue-700 disabled:bg-blue-400 text-white font-bold text-xs px-5 py-2.5 md:px-6 md:py-3 rounded-lg md:rounded-xl transition-all shadow-md flex items-center justify-center min-w-[100px] md:min-w-[120px]"
+                      aria-busy={otpStatus === 'verifying'}
+                      className="bg-blue-600 hover:bg-blue-700 disabled:bg-blue-400 text-white font-bold text-xs px-5 py-2.5 md:px-6 md:py-3 rounded-lg md:rounded-xl transition-all shadow-md flex items-center justify-center min-w-[100px] md:min-w-[120px] focus-visible:ring-4 focus-visible:ring-blue-600/40 outline-none"
                     >
                       {otpStatus === 'verifying' ? <div className="w-3 h-3 md:w-4 md:h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" /> : 'Verify'}
                     </button>
@@ -311,26 +319,27 @@ export default function Contact() {
                 </div>
               </div>
 
-              {/* Message Block */}
               <div className="relative">
+                <label htmlFor="message" className="sr-only">Project Details</label>
                 <textarea 
+                  id="message"
                   rows={4} 
                   name="message"
                   value={formData.message}
                   onChange={handleChange}
                   placeholder="Tell us about your project... (Max 40 words)" 
-                  className="w-full bg-white text-slate-900 placeholder-slate-400 text-sm md:text-base font-medium rounded-xl md:rounded-2xl px-4 py-3 md:px-5 md:py-4 outline-none border border-white shadow-[0_4px_15px_rgba(0,0,0,0.03)] focus:shadow-[0_8px_25px_rgba(191,240,245,0.6)] focus:border-[#bff0f5] transition-all duration-300 resize-none pb-8 md:pb-10"
+                  className="w-full bg-white text-slate-900 placeholder-slate-400 text-sm md:text-base font-medium rounded-xl md:rounded-2xl px-4 py-3 md:px-5 md:py-4 outline-none border border-white shadow-[0_4px_15px_rgba(0,0,0,0.03)] focus:shadow-[0_8px_25px_rgba(191,240,245,0.6)] focus:border-[#bff0f5] transition-all duration-300 resize-none pb-8 md:pb-10 focus-visible:ring-4 focus-visible:ring-[#bff0f5]/40"
                 />
-                <div className={`absolute bottom-3 right-4 md:bottom-4 md:right-5 text-[10px] md:text-[11px] font-extrabold bg-white px-2 py-0.5 rounded-full shadow-sm ${wordCount >= 40 ? 'text-red-500' : 'text-slate-400'}`}>
+                <div className={`absolute bottom-3 right-4 md:bottom-4 md:right-5 text-[10px] md:text-[11px] font-extrabold bg-white px-2 py-0.5 rounded-full shadow-sm ${wordCount >= 40 ? 'text-red-500' : 'text-slate-400'}`} aria-live="polite">
                   {wordCount} / 40
                 </div>
               </div>
 
-              {/* Highly Animated Priority Submit Button */}
               <button 
                 type="submit" 
                 disabled={otpStatus !== 'verified' || isSubmitting}
-                className={`w-full flex items-center justify-center space-x-2 transition-all duration-300 group relative overflow-hidden rounded-xl md:rounded-2xl
+                aria-disabled={otpStatus !== 'verified' || isSubmitting}
+                className={`w-full flex items-center justify-center space-x-2 transition-all duration-300 group relative overflow-hidden rounded-xl md:rounded-2xl focus-visible:ring-4 focus-visible:ring-slate-900/40 outline-none
                   ${otpStatus === 'verified' 
                     ? 'bg-slate-900 text-[#a6f7d0] hover:text-[#bff0f5] shadow-[0_10px_30px_rgba(166,247,208,0.5)] hover:shadow-[0_15px_40px_rgba(191,240,245,0.7)] hover:scale-[1.02] border border-[#a6f7d0]/20' 
                     : 'bg-white/60 text-slate-400 cursor-not-allowed border border-white backdrop-blur-md shadow-sm'
@@ -338,7 +347,6 @@ export default function Contact() {
                 `}
                 style={{ paddingTop: '1rem', paddingBottom: '1rem' }}
               >
-                {/* Looping Sweep Animation when active */}
                 {otpStatus === 'verified' && (
                   <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent animate-shimmer-sweep" />
                 )}
@@ -351,7 +359,6 @@ export default function Contact() {
                   <span aria-hidden="true" className="relative z-10 ml-2 text-xl md:text-2xl animate-bounce-horizontal">→</span>
                 )}
               </button>
-
             </form>
           </div>
         </div>
