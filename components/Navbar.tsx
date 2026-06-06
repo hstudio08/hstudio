@@ -48,7 +48,7 @@ export default function Navbar() {
             className="w-10 h-auto md:w-12 transition-transform duration-300 group-hover:scale-105" 
             priority
           />
-          <span className="hidden sm:block text-xl font-black tracking-tight text-slate-900 group-hover:text-blue-600 transition-colors duration-300">
+          <span className="text-[1.1rem] md:text-xl font-black tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-blue-800 via-blue-600 to-sky-400 drop-shadow-sm group-hover:brightness-110 transition-all duration-300">
             Qurevo Technologies
           </span>
         </Link>

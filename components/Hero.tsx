@@ -66,17 +66,13 @@ export default function Hero() {
             
             <div className="z-10 animate-float mb-6">
               <Image 
-                src="/logo.png" 
+                src="https://res.cloudinary.com/dpqsadqxj/image/upload/q_auto/f_auto/v1780761363/fulllogo_upho3k_t2pc9e.webp" 
                 alt="Qurevo Technologies Logo" 
-                width={300} 
-                height={300} 
-                className="w-56 md:w-72 h-auto object-contain drop-shadow-2xl"
+                width={500} 
+                height={500} 
+                className="w-112 md:w-140 h-auto object-contain drop-shadow-2xl"
                 priority
               />
-            </div>
-            
-            <div className="absolute bottom-12 w-64 md:w-80 h-10 rounded-[100%] bg-gradient-to-b from-white/90 to-slate-100/40 border border-white/60 shadow-[0_20px_40px_rgba(0,0,0,0.06)] backdrop-blur-sm flex items-center justify-center transition-transform duration-700">
-              <div className="w-[85%] h-[50%] rounded-[100%] bg-white/80 shadow-[inset_0_-2px_10px_rgba(255,255,255,1)] blur-[0.5px]" />
             </div>
           </div>
         </div>
