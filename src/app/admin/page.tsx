@@ -269,7 +269,7 @@ export default function AdminPanel() {
                 <input 
                   type="email" 
                   required 
-                  placeholder="admin@qurevo.com" 
+                  placeholder="admin@qurevo.in" 
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   className="w-full bg-slate-50 border border-slate-200 focus:border-blue-400 focus:ring-4 focus:ring-blue-500/10 rounded-xl px-4 py-3.5 text-sm text-slate-900 placeholder-slate-400 outline-none transition-all shadow-sm"

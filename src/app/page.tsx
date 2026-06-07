@@ -16,9 +16,9 @@ export default function Home() {
     "@context": "https://schema.org",
     "@type": "ProfessionalService",
     "name": "Qurevo Technologies",
-    "image": "https://qurevotechnologies.vercel.app/logo.png", 
-    "@id": "https://qurevotechnologies.vercel.app", 
-    "url": "https://qurevotechnologies.vercel.app", 
+    "image": "https://qurevo.in/logo.png", 
+    "@id": "https://qurevo.in", 
+    "url": "https://qurevo.in", 
     "address": {
       "@type": "PostalAddress",
       "addressLocality": "Srinagar",

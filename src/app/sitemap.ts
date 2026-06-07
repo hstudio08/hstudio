@@ -2,7 +2,7 @@ import { MetadataRoute } from 'next';
 
 export default function sitemap(): MetadataRoute.Sitemap {
   // Updated to the expected new Vercel domain
-  const baseUrl = 'https://qurevo.vercel.app';
+  const baseUrl = 'https://qurevo.in';
 
   return [
     {

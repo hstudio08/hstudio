@@ -13,7 +13,7 @@ export const viewport: Viewport = {
 
 // Comprehensive SEO Metadata for Qurevo Technologies
 export const metadata: Metadata = {
-  metadataBase: new URL("https://qurevo.vercel.app"), // FIX: Added metadataBase to resolve Next.js warning
+  metadataBase: new URL("https://qurevo.in"), // FIX: Added metadataBase to resolve Next.js warning
   title: {
     default: "Qurevo Technologies | Best Web Development Company in Srinagar & Kashmir",
     template: "%s | Qurevo Technologies"
@@ -57,7 +57,7 @@ export const metadata: Metadata = {
   openGraph: {
     type: "website",
     locale: "en_US",
-    url: "https://qurevo.vercel.app", 
+    url: "https://qurevo.in", 
     siteName: "Qurevo Technologies",
     title: "Qurevo Technologies | Premium Web Development Agency",
     description: "High-performance websites that scale your digital footprint. Based in Srinagar, serving brands globally.",
