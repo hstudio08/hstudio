@@ -37,23 +37,37 @@ export default function AboutPage() {
     <main className="flex flex-col min-h-screen bg-slate-50 overflow-hidden">
       <Navbar />
 
-      {/* Hero Section - Left Aligned, Tighter Margins */}
+      {/* Hero Section - Split Layout with Logo on Right */}
       <section className="relative pt-32 pb-10 md:pt-36 md:pb-12 px-4 sm:px-6 md:px-8 max-w-[96rem] mx-auto w-full z-10">
-        <div className="max-w-5xl">
-          <h1 className="text-4xl md:text-5xl lg:text-6xl font-black text-slate-900 tracking-tight mb-4">
-            About <span className="font-['Satisfy'] text-transparent bg-clip-text bg-gradient-to-r from-sky-400 to-blue-600 px-2 font-normal">Qurevo</span>
-          </h1>
-          <h2 className="text-xl md:text-2xl font-extrabold text-blue-700 mb-6">
-            The Top Web Development Company in Srinagar
-          </h2>
-          <div className="w-20 h-1.5 bg-gradient-to-r from-sky-400 to-blue-600 rounded-full mb-8"></div>
-          
-          <p className="text-base md:text-lg text-slate-700 font-medium leading-relaxed mb-4">
-            If you are looking for the <strong className="text-blue-700">best web development company in Srinagar</strong>, Qurevo Technologies is your ultimate digital partner. We are a modern <strong className="text-blue-700">website design agency in Kashmir</strong> focused on building high-performance websites, scalable digital platforms, and result-driven online experiences for businesses and startups.
-          </p>
-          <p className="text-base md:text-lg text-slate-700 font-medium leading-relaxed mb-4">
-            Founded in 2024 as H Studios by <strong className="text-blue-700">Haadi Sabzar Lone</strong>—widely regarded as the <strong className="text-blue-700">best web developer in Kashmir</strong>—Qurevo Technologies evolved into a full-scale digital agency. Our mission is to make world-class web development accessible across Jammu & Kashmir.
-          </p>
+        <div className="flex flex-col lg:flex-row justify-between items-start gap-12 lg:gap-8">
+          <div className="max-w-3xl">
+            <h1 className="text-4xl md:text-5xl lg:text-6xl font-black text-slate-900 tracking-tight mb-4">
+              About <span className="font-['Satisfy'] text-transparent bg-clip-text bg-gradient-to-r from-sky-400 to-blue-600 px-2 font-normal">Qurevo</span>
+            </h1>
+            <h2 className="text-xl md:text-2xl font-extrabold text-blue-700 mb-6">
+              The Top Web Development Company in Srinagar
+            </h2>
+            <div className="w-20 h-1.5 bg-gradient-to-r from-sky-400 to-blue-600 rounded-full mb-8"></div>
+            
+            <p className="text-base md:text-lg text-slate-700 font-medium leading-relaxed mb-4">
+              If you are looking for the <strong className="text-blue-700">best web development company in Srinagar</strong>, Qurevo Technologies is your ultimate digital partner. We are a modern <strong className="text-blue-700">website design agency in Kashmir</strong> focused on building high-performance websites, scalable digital platforms, and result-driven online experiences for businesses and startups.
+            </p>
+            <p className="text-base md:text-lg text-slate-700 font-medium leading-relaxed mb-4">
+              Founded in 2024 as H Studios by <strong className="text-blue-700">Haadi Sabzar Lone</strong>—widely regarded as the <strong className="text-blue-700">best web developer in Kashmir</strong>—Qurevo Technologies evolved into a full-scale digital agency. Our mission is to make world-class web development accessible across Jammu & Kashmir.
+            </p>
+          </div>
+
+          {/* Full Logo on Top Right */}
+          <div className="hidden lg:block shrink-0 pt-20 opacity-100 drop-shadow-sm">
+            <Image 
+              src="/icons/fulllogo.png" 
+              alt="Qurevo Technologies Full Logo" 
+              width={420} 
+              height={240} 
+              className="object-contain"
+              priority
+            />
+          </div>
         </div>
       </section>
 
@@ -171,13 +185,13 @@ export default function AboutPage() {
                 <h4 className="font-bold text-white">Starter Package</h4>
                 <p className="text-xs text-slate-300 mt-1">Basic business website, modern responsive design, contact integration, and basic SEO setup.</p>
               </div>
-              <div className="bg-gradient-to-r from-sky-900 to-blue-900 p-4 rounded-xl border border-blue-700">
-                <h4 className="font-bold text-white">Growth Package <span className="ml-2 text-[10px] bg-sky-400 text-sky-900 px-2 py-0.5 rounded-full uppercase tracking-wider">Popular</span></h4>
+              <div className="bg-slate-800/50 p-4 rounded-xl border border-slate-700">
+                <h4 className="font-bold text-white">Growth Package </h4>
                 <p className="text-xs text-sky-100 mt-1">Multi-page professional site, advanced UI/UX, on-page SEO, speed optimization, and lead generation.</p>
               </div>
-              <div className="bg-slate-800/50 p-4 rounded-xl border border-slate-700">
-                <h4 className="font-bold text-white">Premium Scale</h4>
-                <p className="text-xs text-slate-300 mt-1">Custom web applications, e-commerce, high-performance architecture, and priority support.</p>
+              <div className="bg-gradient-to-r from-sky-900 to-blue-900 p-4 rounded-xl border border-blue-700">
+                <h4 className="font-bold text-white">Premium Package <span className="ml-2 text-[10px] bg-sky-400 text-sky-900 px-2 py-0.5 rounded-full uppercase tracking-wider">Popular</span></h4>
+                <p className="text-xs text-sky-100 mt-1">Custom web applications, e-commerce, high-performance architecture, and priority support.</p>
               </div>
             </div>
           </div>
@@ -193,6 +207,26 @@ export default function AboutPage() {
             <p className="text-slate-700 font-medium">
               We are more than just an agency; we are your long-term digital partner. From simple websites to advanced digital systems, we build solutions that are fast, modern, and strictly results-driven.
             </p>
+          </div>
+        </div>
+
+        {/* NEW SECTION: Video Editing Services */}
+        <div className="bg-gradient-to-r from-slate-900 via-slate-800 to-slate-900 border border-slate-700 p-8 md:p-12 rounded-3xl mt-8 flex flex-col md:flex-row items-center justify-between gap-8 text-white shadow-xl relative overflow-hidden">
+          <div className="absolute top-0 right-0 -mr-16 -mt-16 w-64 h-64 bg-indigo-500/20 blur-3xl rounded-full pointer-events-none"></div>
+          <div className="max-w-3xl relative z-10">
+            <h3 className="text-3xl font-extrabold mb-4">Professional Video Editing Services</h3>
+            <p className="text-slate-300 leading-relaxed mb-4 text-lg">
+              Beyond web development, Qurevo houses a team of specialized video editors dedicated to bringing your brand&apos;s visual story to life.
+            </p>
+            <p className="text-slate-400 font-medium">
+              We leverage industry-leading, professional software like <strong className="text-sky-400">DaVinci Resolve</strong> and <strong className="text-sky-400">CapCut Pro</strong> to deliver cinematic color grading, dynamic cuts, and high-retention content tailored for social media, YouTube, and corporate showcases.
+            </p>
+          </div>
+          <div className="relative z-10 hidden md:flex flex-col items-center gap-3 shrink-0">
+            <div className="bg-slate-800/80 border border-slate-600 p-5 rounded-2xl text-center shadow-inner">
+              <span className="block text-3xl font-black text-white bg-clip-text text-transparent bg-gradient-to-r from-sky-400 to-blue-500">4K+</span>
+              <span className="text-xs text-slate-300 uppercase tracking-widest mt-1 block">Cinematic Quality</span>
+            </div>
           </div>
         </div>
 

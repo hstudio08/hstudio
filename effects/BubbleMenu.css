@@ -1,0 +1,145 @@
+.bubble-menu {
+  position: fixed;
+  left: 0;
+  right: 0;
+  top: 1.25rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 1rem;
+  pointer-events: none;
+  z-index: 100;
+}
+
+.bubble-menu .bubble {
+  --bubble-size: 46px;
+  width: var(--bubble-size);
+  height: var(--bubble-size);
+  border-radius: 50%;
+  background: #c8f69c;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.5);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: auto; 
+}
+
+.bubble-menu .logo-bubble {
+  width: auto;
+  padding: 0 16px;
+  border-radius: 99px;
+  gap: 8px;
+}
+
+.bubble-menu .bubble-logo {
+  max-height: 60%;
+  max-width: 100%;
+  object-fit: contain;
+  display: block;
+}
+
+.bubble-menu .menu-btn {
+  border: none;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  padding: 0;
+}
+
+.bubble-menu .menu-line {
+  width: 20px;
+  height: 2px;
+  border-radius: 2px;
+  display: block;
+  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  transform-origin: center;
+}
+
+.bubble-menu .menu-line + .menu-line {
+  margin-top: 5px;
+}
+
+.bubble-menu .menu-btn.open .menu-line:first-child {
+  transform: translateY(3.5px) rotate(45deg);
+}
+
+.bubble-menu .menu-btn.open .menu-line:last-child {
+  transform: translateY(-3.5px) rotate(-45deg);
+}
+
+/* OVERLAY & ITEMS - Top 2/3 with Premium Blur */
+.bubble-menu-items {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  padding-top: 20vh; 
+  background: rgba(255, 255, 255, 0.45); 
+  backdrop-filter: blur(24px); 
+  -webkit-backdrop-filter: blur(24px);
+  z-index: 98;
+  opacity: 0;
+  pointer-events: none; 
+  overflow-y: auto; /* Ensures menu is scrollable on tiny phones */
+}
+
+.bubble-menu-items .pill-list {
+  list-style: none;
+  margin: 0 auto;
+  padding: 0 1rem;
+  display: flex;
+  flex-direction: row; 
+  flex-wrap: wrap; 
+  justify-content: center; 
+  align-items: center;
+  gap: 5px; 
+  width: 100%;
+  max-width: 400px; 
+
+  /* ADD THESE 3 LINES TO FIX THE GAP */
+  align-content: flex-start; /* Packs the wrapped lines tightly together */
+  height: max-content;       /* Stops the container from stretching vertically */
+  flex: 0 0 auto;            /* Prevents the parent flex column from making it grow */
+}
+
+.bubble-menu-items .pill-col {
+  display: block; 
+  width: auto; 
+  flex: 0 0 auto;
+}
+
+.bubble-menu-items .pill-link {
+  display: inline-flex;
+  width: max-content; 
+  padding: 12px 24px; 
+  font-size: 0.95rem; 
+  min-height: 44px; 
+  font-family: 'Familjen Grotesk', sans-serif;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  white-space: nowrap; 
+  border-radius: 99px;
+  background: var(--pill-bg, #bae797);
+  color: var(--pill-color, #0f172a);
+  text-decoration: none;
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.08);
+  border: 1px solid rgba(55, 166, 240, 0.9);
+  align-items: center;
+  justify-content: center;
+  transition: background-color 0.2s ease, color 0.2s ease, opacity 0.2s ease;
+  will-change: transform; 
+}
+
+.bubble-menu-items .pill-link:active {
+  opacity: 0.7; 
+}
+
+.bubble-menu-items .pill-link .pill-label {
+  display: inline-block;
+  will-change: transform, opacity;
+  line-height: 1;
+}

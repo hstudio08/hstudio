@@ -25,6 +25,7 @@ interface PillNavProps {
   pillTextColor?: string;
   onMobileMenuClick?: () => void;
   initialLoadAnimation?: boolean;
+  actionButton?: React.ReactNode; // <-- ADDED PROP
 }
 
 const PillNav = ({
@@ -39,7 +40,8 @@ const PillNav = ({
   hoveredPillTextColor = '#fff',
   pillTextColor,
   onMobileMenuClick,
-  initialLoadAnimation = true
+  initialLoadAnimation = true,
+  actionButton // <-- DESTRUCTURED
 }: PillNavProps) => {
   const resolvedPillTextColor = pillTextColor ?? baseColor;
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -271,15 +273,24 @@ const PillNav = ({
           </ul>
         </div>
 
-        <button
-          className="mobile-menu-button mobile-only"
-          onClick={toggleMobileMenu}
-          aria-label="Toggle menu"
-          ref={hamburgerRef}
-        >
-          <span className="hamburger-line" />
-          <span className="hamburger-line" />
-        </button>
+        {/* MODIFIED: Wrapper for the action button & hamburger menu side-by-side */}
+        <div className="flex items-center gap-2 md:gap-3 ml-auto md:ml-2">
+          {actionButton && (
+            <div className="flex items-center">
+              {actionButton}
+            </div>
+          )}
+          
+          <button
+            className="mobile-menu-button mobile-only"
+            onClick={toggleMobileMenu}
+            aria-label="Toggle menu"
+            ref={hamburgerRef}
+          >
+            <span className="hamburger-line" />
+            <span className="hamburger-line" />
+          </button>
+        </div>
       </nav>
 
       <div className="mobile-menu-popover mobile-only" ref={mobileMenuRef} style={cssVars}>

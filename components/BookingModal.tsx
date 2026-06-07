@@ -152,31 +152,30 @@ export default function BookingModal({ isOpen, onClose }: BookingModalProps) {
         onClick={resetAndClose}
       />
 
-      {/* Modal Container: Highly flexible width/height with safe limits */}
-      <div className="relative w-full max-w-[95%] sm:max-w-md bg-white rounded-[2rem] shadow-2xl flex flex-col max-h-[90vh] overflow-hidden z-10">
+      {/* Modal Container: Optimized for all screens */}
+      <div className="relative w-full max-w-[95%] sm:max-w-md bg-white rounded-[1.5rem] sm:rounded-[2rem] shadow-2xl flex flex-col max-h-[92vh] sm:max-h-[90vh] overflow-hidden z-10">
         
-        {/* FIXED Header area (Never scrolls away) */}
-        <div className="flex items-center justify-between px-6 pt-5 pb-4 border-b border-slate-100 bg-white shrink-0">
+        {/* FIXED Header area (Slimmed down to save vertical space) */}
+        <div className="flex items-center justify-between px-5 sm:px-6 pt-4 pb-3 border-b border-slate-100 bg-white shrink-0">
           <div className="flex items-center">
-            {/* Image untouched exactly as requested */}
-            <Image src="/icons/fulllogo.png" alt="Qurevo Logo" width={1056} height={733} className="h-20 sm:h-20 w-auto object-contain" />
+            <Image src="/icons/fulllogo.png" alt="Qurevo Logo" width={1056} height={733} className="h-10 sm:h-22 w-auto object-contain" />
           </div>
-          <button onClick={resetAndClose} className="p-2 text-slate-400 hover:text-slate-800 bg-slate-50 hover:bg-slate-100 rounded-full transition-colors outline-none">
+          <button onClick={resetAndClose} className="p-1.5 text-slate-400 hover:text-slate-800 bg-slate-50 hover:bg-slate-100 rounded-full transition-colors outline-none">
             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12"></path></svg>
           </button>
         </div>
 
         {/* SCROLLABLE Body area */}
-        <div className="overflow-y-auto flex-1 p-5 sm:p-7 pb-8 scrollbar-hide">
+        <div className="overflow-y-auto overscroll-contain flex-1 p-4 sm:p-6 pb-10 scrollbar-hide">
           {isSuccess ? (
             /* Success State */
             <div className="text-center flex flex-col items-center justify-center h-full py-6">
-              <div className="w-16 h-16 bg-emerald-100 text-emerald-500 rounded-full flex items-center justify-center mb-5">
-                <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M5 13l4 4L19 7"></path></svg>
+              <div className="w-14 h-14 bg-emerald-100 text-emerald-500 rounded-full flex items-center justify-center mb-4">
+                <svg className="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M5 13l4 4L19 7"></path></svg>
               </div>
-              <h3 className="text-2xl font-black text-slate-900 mb-2">Request Sent!</h3>
-              <p className="text-sm text-slate-600 mb-8 px-4">Our team will contact you shortly to discuss your digital transformation.</p>
-              <button onClick={resetAndClose} className="bg-slate-900 text-white font-bold py-3 px-8 rounded-full hover:bg-slate-800 transition-colors w-full sm:w-auto text-sm">
+              <h3 className="text-xl font-black text-slate-900 mb-2">Request Sent!</h3>
+              <p className="text-sm text-slate-600 mb-6 px-2">Our team will contact you shortly to discuss your digital transformation.</p>
+              <button onClick={resetAndClose} className="bg-slate-900 text-white font-bold py-2.5 px-6 rounded-full hover:bg-slate-800 transition-colors w-full sm:w-auto text-base sm:text-sm">
                 Close Window
               </button>
             </div>
@@ -191,27 +190,33 @@ export default function BookingModal({ isOpen, onClose }: BookingModalProps) {
             >
               {/* STEP 1: Personal Details & OTP */}
               <Step>
-                <div className="pb-2">
-                  <h2 className="text-xl font-extrabold text-slate-900 mb-1">Let's get started</h2>
-                  <p className="text-xs text-slate-500 mb-6">We need your basic details to verify your identity.</p>
+                {/* FIX: pb-24 adds huge padding at the bottom of this specific step. 
+                  This ensures the user can scroll the OTP field totally above the Stepper's fixed footer!
+                */}
+                <div className="pb-24 sm:pb-20">
+                  <h2 className="text-lg sm:text-xl font-extrabold text-slate-900 mb-1">Let's get started</h2>
+                  <p className="text-xs text-slate-500 mb-4">We need your basic details to verify your identity.</p>
                   
-                  <div className="space-y-4">
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div className="space-y-3">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                       <div>
-                        <label className="block text-[10px] sm:text-xs font-bold text-slate-700 uppercase tracking-wide mb-1.5">Full Name *</label>
-                        <input type="text" value={formData.name} onChange={e => setFormData({...formData, name: e.target.value})} className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 sm:py-3 text-sm font-medium outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100 transition-all" placeholder="John Doe" required />
+                        <label className="block text-[10px] font-bold text-slate-700 uppercase tracking-wide mb-1">Full Name *</label>
+                        {/* FIX: text-base on mobile prevents iOS safari auto-zoom */}
+                        <input type="text" value={formData.name} onChange={e => setFormData({...formData, name: e.target.value})} className="w-full bg-slate-50 border border-slate-200 rounded-lg px-3 py-2.5 sm:py-2 text-base sm:text-sm font-medium outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100 transition-all" placeholder="John Doe" required />
                       </div>
                       <div>
-                        <label className="block text-[10px] sm:text-xs font-bold text-slate-700 uppercase tracking-wide mb-1.5">Phone *</label>
-                        <input type="tel" value={formData.phone} onChange={e => setFormData({...formData, phone: e.target.value})} className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 sm:py-3 text-sm font-medium outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100 transition-all" placeholder="+91..." required />
+                        <label className="block text-[10px] font-bold text-slate-700 uppercase tracking-wide mb-1">Phone *</label>
+                        {/* FIX: text-base on mobile prevents iOS safari auto-zoom */}
+                        <input type="tel" value={formData.phone} onChange={e => setFormData({...formData, phone: e.target.value})} className="w-full bg-slate-50 border border-slate-200 rounded-lg px-3 py-2.5 sm:py-2 text-base sm:text-sm font-medium outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100 transition-all" placeholder="+91..." required />
                       </div>
                     </div>
 
                     {/* OTP Email Section */}
-                    <div className="p-2 rounded-2xl bg-slate-50 border border-slate-200 relative overflow-hidden transition-all duration-500">
+                    <div className="p-1.5 sm:p-2 rounded-xl bg-slate-50 border border-slate-200 relative overflow-hidden transition-all duration-500">
                       {otpStatus === 'verified' && <div className="absolute inset-0 bg-green-500/10 pointer-events-none" />}
                       
                       <div className="flex flex-col sm:flex-row gap-2 relative z-10">
+                        {/* FIX: text-base on mobile prevents iOS safari auto-zoom */}
                         <input 
                           type="email" 
                           value={formData.email}
@@ -219,41 +224,42 @@ export default function BookingModal({ isOpen, onClose }: BookingModalProps) {
                           disabled={otpStatus === 'verified'}
                           required
                           placeholder="Your Email Address *" 
-                          className="flex-1 bg-white border border-slate-200 px-4 py-2.5 sm:py-3 text-sm font-medium text-slate-900 placeholder-slate-400 outline-none transition-all disabled:opacity-60 focus-visible:ring-2 focus-visible:ring-blue-200 rounded-xl"
+                          className="flex-1 bg-white border border-slate-200 px-3 py-2.5 sm:py-2 text-base sm:text-sm font-medium text-slate-900 placeholder-slate-400 outline-none transition-all disabled:opacity-60 focus-visible:ring-2 focus-visible:ring-blue-200 rounded-lg"
                         />
                         
                         {otpStatus !== 'verified' && (
                           <button 
                             onClick={handleSendOTP}
                             disabled={otpStatus === 'sending' || otpStatus === 'verifying'}
-                            className="bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs px-5 py-3 rounded-xl transition-all shadow-md disabled:opacity-50 flex items-center justify-center min-w-[100px] outline-none"
+                            className="bg-blue-600 hover:bg-blue-700 text-white font-bold text-[13px] sm:text-xs px-4 py-2.5 sm:py-2 rounded-lg transition-all shadow-sm disabled:opacity-50 flex items-center justify-center min-w-[90px] outline-none"
                           >
                             {otpStatus === 'sending' ? 'Sending...' : otpStatus === 'sent' ? 'Resend' : 'Send OTP'}
                           </button>
                         )}
                         
                         {otpStatus === 'verified' && (
-                          <div className="flex items-center justify-center px-5 py-3 rounded-xl bg-green-100 text-green-800 font-extrabold text-xs border border-green-200">
+                          <div className="flex items-center justify-center px-4 py-2.5 sm:py-2 rounded-lg bg-green-100 text-green-800 font-extrabold text-[13px] sm:text-xs border border-green-200">
                             ✓ Verified
                           </div>
                         )}
                       </div>
 
-                      {/* OTP Code Entry Input - Using Grid for 100% accurate height calculation to stop clipping */}
+                      {/* OTP Code Entry Input */}
                       <div className={`grid transition-all duration-300 ease-in-out ${otpStatus === 'sent' || otpStatus === 'verifying' ? 'grid-rows-[1fr] opacity-100 mt-2' : 'grid-rows-[0fr] opacity-0 mt-0'}`}>
                         <div className="overflow-hidden">
                           <div className="flex gap-2 relative z-10 pt-1 pb-1">
+                            {/* FIX: text-base on mobile prevents iOS safari auto-zoom */}
                             <input 
                               type="text" 
                               placeholder="6-digit OTP" 
                               value={otpCode}
                               onChange={(e) => setOtpCode(e.target.value.replace(/\D/g, '').slice(0, 6))}
-                              className="flex-1 bg-white border border-slate-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 rounded-xl px-4 py-2.5 sm:py-3 text-sm text-center tracking-[0.3em] text-slate-900 font-extrabold outline-none"
+                              className="flex-1 bg-white border border-slate-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 rounded-lg px-3 py-2.5 sm:py-2 text-base sm:text-sm text-center tracking-[0.2em] sm:tracking-[0.3em] text-slate-900 font-extrabold outline-none"
                             />
                             <button 
                               onClick={handleVerifyOTP}
                               disabled={otpCode.length < 4 || otpStatus === 'verifying'}
-                              className="bg-slate-900 hover:bg-slate-800 disabled:bg-slate-400 text-white font-bold text-xs px-5 py-3 rounded-xl transition-all shadow-md flex items-center justify-center min-w-[100px] outline-none"
+                              className="bg-slate-900 hover:bg-slate-800 disabled:bg-slate-400 text-white font-bold text-[13px] sm:text-xs px-4 py-2.5 sm:py-2 rounded-lg transition-all shadow-sm flex items-center justify-center min-w-[90px] outline-none"
                             >
                               {otpStatus === 'verifying' ? '...' : 'Verify'}
                             </button>
@@ -267,18 +273,18 @@ export default function BookingModal({ isOpen, onClose }: BookingModalProps) {
 
               {/* STEP 2: Service / Package Selection */}
               <Step>
-                <div className="pb-2">
-                  <h2 className="text-xl font-extrabold text-slate-900 mb-1">What do you need?</h2>
-                  <p className="text-xs text-slate-500 mb-6">Select the package or service you are looking for.</p>
+                <div className="pb-24 sm:pb-20">
+                  <h2 className="text-lg sm:text-xl font-extrabold text-slate-900 mb-1">What do you need?</h2>
+                  <p className="text-xs text-slate-500 mb-4">Select the package or service you are looking for.</p>
                   
-                  <div className="space-y-3">
+                  <div className="space-y-2.5">
                     {[
                       'Starter Package — ₹10,000', 
                       'Growth Package — ₹15,000', 
                       'Premium Package — ₹20,000', 
                       'Custom Requirements / Quote'
                     ].map((pkg) => (
-                      <label key={pkg} className={`flex items-center p-3.5 border rounded-xl cursor-pointer transition-all ${formData.packageType === pkg ? 'border-blue-500 bg-blue-50/50' : 'border-slate-200 hover:border-blue-300'}`}>
+                      <label key={pkg} className={`flex items-center p-3 border rounded-xl cursor-pointer transition-all ${formData.packageType === pkg ? 'border-blue-500 bg-blue-50/50' : 'border-slate-200 hover:border-blue-300'}`}>
                         <input 
                           type="radio" 
                           name="package" 
@@ -296,11 +302,12 @@ export default function BookingModal({ isOpen, onClose }: BookingModalProps) {
 
               {/* STEP 3: Message & Submit */}
               <Step>
-                <div className="pb-2">
-                  <h2 className="text-xl font-extrabold text-slate-900 mb-1">Any specific details?</h2>
-                  <p className="text-xs text-slate-500 mb-6">Briefly describe your project. We'll handle the rest.</p>
+                <div className="pb-24 sm:pb-20">
+                  <h2 className="text-lg sm:text-xl font-extrabold text-slate-900 mb-1">Any specific details?</h2>
+                  <p className="text-xs text-slate-500 mb-4">Briefly describe your project. We'll handle the rest.</p>
                   
                   <div className="relative pb-2">
+                    {/* FIX: text-base on mobile prevents iOS safari auto-zoom */}
                     <textarea 
                       value={formData.message} 
                       onChange={e => {
@@ -308,18 +315,18 @@ export default function BookingModal({ isOpen, onClose }: BookingModalProps) {
                           setFormData({...formData, message: e.target.value});
                         }
                       }} 
-                      rows={5}
+                      rows={4}
                       maxLength={MAX_CHARS}
-                      className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm font-medium outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100 transition-all resize-none pb-8" 
+                      className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-3 text-base sm:text-sm font-medium outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100 transition-all resize-none pb-8" 
                       placeholder="I am looking to build a website that..."
                     />
-                    <div className={`absolute bottom-5 right-4 text-[10px] font-bold ${formData.message.length >= MAX_CHARS ? 'text-red-500' : 'text-slate-400'}`}>
+                    <div className={`absolute bottom-5 right-3 text-[10px] font-bold ${formData.message.length >= MAX_CHARS ? 'text-red-500' : 'text-slate-400'}`}>
                       {formData.message.length} / {MAX_CHARS}
                     </div>
                   </div>
                   
                   {isSubmitting && (
-                    <div className="mt-3 text-center text-xs font-bold text-blue-600 animate-pulse">
+                    <div className="mt-2 text-center text-xs font-bold text-blue-600 animate-pulse">
                       Processing your request securely...
                     </div>
                   )}
