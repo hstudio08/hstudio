@@ -1,0 +1,152 @@
+.stepper-outer-container {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+}
+
+.step-circle-container {
+  width: 100%;
+  background: white;
+  border-radius: 1.5rem;
+}
+
+.step-indicator-row {
+  display: flex;
+  width: 100%;
+  align-items: center;
+  padding: 1.5rem 1.5rem 0.5rem 1.5rem;
+}
+
+.step-content-default {
+  position: relative;
+  overflow: hidden;
+}
+
+.step-default {
+  padding: 1rem 1.5rem;
+}
+
+.footer-container {
+  padding: 1rem 1.5rem 1.5rem 1.5rem;
+}
+
+.footer-nav {
+  display: flex;
+  margin-top: 1rem;
+}
+
+.footer-nav.spread {
+  justify-content: space-between;
+}
+
+.footer-nav.end {
+  justify-content: flex-end;
+}
+
+.back-button {
+  transition: all 300ms;
+  border-radius: 9999px;
+  padding: 0.5rem 1.25rem;
+  color: #64748b;
+  font-weight: 700;
+  font-size: 0.875rem;
+  background: #f1f5f9;
+  cursor: pointer;
+  border: none;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  font-family: 'Familjen Grotesk', sans-serif;
+}
+
+.back-button:hover {
+  background: #e2e8f0;
+  color: #0f172a;
+}
+
+.back-button.inactive {
+  pointer-events: none;
+  opacity: 0;
+}
+
+.next-button {
+  transition: all 300ms;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 9999px;
+  background: linear-gradient(to right, #0ea5e9, #2563eb);
+  color: #fff;
+  font-weight: 800;
+  font-size: 0.875rem;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  padding: 0.6rem 1.5rem;
+  cursor: pointer;
+  border: none;
+  font-family: 'Familjen Grotesk', sans-serif;
+  box-shadow: 0 4px 14px rgba(37, 99, 235, 0.25);
+}
+
+.next-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(37, 99, 235, 0.4);
+}
+
+.next-button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.step-indicator {
+  position: relative;
+  cursor: pointer;
+  outline: none;
+}
+
+.step-indicator-inner {
+  display: flex;
+  height: 2rem;
+  width: 2rem;
+  align-items: center;
+  justify-content: center;
+  border-radius: 9999px;
+  font-weight: 800;
+  font-family: 'Familjen Grotesk', sans-serif;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+}
+
+.active-dot {
+  height: 0.75rem;
+  width: 0.75rem;
+  border-radius: 9999px;
+  background-color: #fff;
+}
+
+.step-number {
+  font-size: 0.875rem;
+}
+
+.step-connector {
+  position: relative;
+  margin-left: 0.5rem;
+  margin-right: 0.5rem;
+  height: 3px;
+  flex: 1;
+  overflow: hidden;
+  border-radius: 0.25rem;
+  background-color: #e2e8f0;
+}
+
+.step-connector-inner {
+  position: absolute;
+  left: 0;
+  top: 0;
+  height: 100%;
+}
+
+.check-icon {
+  height: 1.2rem;
+  width: 1.2rem;
+  color: #fff;
+}

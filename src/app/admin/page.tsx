@@ -322,7 +322,7 @@ export default function AdminPanel() {
             onClick={() => setActiveTab('reviews')}
             className={`px-6 py-3 rounded-xl font-bold text-sm transition-all flex items-center space-x-2 ${activeTab === 'reviews' ? 'bg-slate-900 text-white shadow-md' : 'bg-white border border-slate-200 text-slate-600 hover:bg-slate-50'}`}
           >
-            <span>Reviews Moderation</span>
+            <span>Reviews</span>
             {reviews.filter(r => r.status === 'pending').length > 0 && (
               <span className="bg-red-500 text-white text-[10px] px-2 py-0.5 rounded-full">
                 {reviews.filter(r => r.status === 'pending').length} New

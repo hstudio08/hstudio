@@ -1,126 +1,76 @@
 "use client";
 
 import React, { useState, useEffect } from 'react';
-import Image from 'next/image';
-import Link from 'next/link';
+import { usePathname } from 'next/navigation';
+import PillNav from '../effects/PillNav';
+import BookingModal from './BookingModal';
+
+// MODULE-LEVEL VARIABLE: 
+// This survives when navigating between pages via Next.js links, 
+// but it is completely erased and reset to `false` if the user refreshes the page or reopens the tab.
+let popupTriggeredThisVisit = false;
 
 export default function Navbar() {
-  const [scrolled, setScrolled] = useState(false);
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-
+  const pathname = usePathname();
+  const [isBookingOpen, setIsBookingOpen] = useState(false);
+  
+  // Auto-Popup Logic: Triggers 2.5 seconds after landing or refreshing
   useEffect(() => {
-    let ticking = false;
-    const handleScroll = () => {
-      if (!ticking) {
-        window.requestAnimationFrame(() => {
-          setScrolled(window.scrollY > 20);
-          ticking = false;
-        });
-        ticking = true;
-      }
-    };
-
-    window.addEventListener('scroll', handleScroll, { passive: true });
-    return () => window.removeEventListener('scroll', handleScroll);
+    if (!popupTriggeredThisVisit) {
+      const timer = setTimeout(() => {
+        setIsBookingOpen(true);
+        // Mark as triggered so it doesn't pop up again while they click around the site
+        popupTriggeredThisVisit = true;
+      }, 2500); // 2.5 seconds
+      
+      return () => clearTimeout(timer); // Cleanup timer if they navigate away before 2.5s
+    }
   }, []);
 
+  // Check if we are on the root homepage or the /home route
+  const isHome = pathname === '/' || pathname === '/home';
+
+  // Dynamically build the navigation array based on the route
   const navLinks = [
-    { name: 'Projects', href: '#projects' },
-    { name: 'Packages', href: '#packages' },
+    { label: 'Home', href: '/home' }, 
+    
+    // Conditionally add these two ONLY if we are on the home page
+    ...(isHome ? [
+      { label: 'Projects', href: '#projects' },
+      { label: 'Packages', href: '#packages' },
+    ] : []),
+
+    { label: 'Who we are?', href: '/about' },
+    { label: 'Solutions', href: '/solutions' } 
   ];
 
   return (
-    <header className="fixed top-0 left-0 right-0 z-50 flex justify-center pt-6 px-4 md:px-8 pointer-events-none">
-      <nav 
-        aria-label="Main Navigation"
-        className={`pointer-events-auto flex items-center justify-between rounded-full border transition-all duration-500 ease-[cubic-bezier(0.23,1,0.32,1)] w-full
-        ${scrolled 
-          ? 'max-w-5xl px-6 py-3 bg-[#e2f2d0]/95 backdrop-blur-xl shadow-[0_8px_30px_rgb(0,0,0,0.08)] border-white/40 translate-y-0' 
-          : 'max-w-[96rem] px-8 py-4 bg-[#e2f2d0]/80 backdrop-blur-md shadow-sm border-white/20'}`}
+    <>
+      {/* 1. The Main Pill Navigation */}
+      <PillNav
+        logo="/logo.png"
+        logoAlt="Qurevo Technologies Logo"
+        items={navLinks}
+        activeHref={pathname}
+        baseColor="#ffffff" 
+        pillColor="transparent" 
+        hoveredPillTextColor="#ffffff"
+        pillTextColor="#0f172a" 
+      />
+
+      {/* 2. Manual Trigger Button (Floating Top Right) */}
+      <button 
+        onClick={() => setIsBookingOpen(true)}
+        className="fixed top-4 md:top-6 right-4 md:right-8 z-[100] bg-gradient-to-r from-sky-400 to-blue-600 hover:from-sky-500 hover:to-blue-700 text-white font-black uppercase tracking-widest text-[10px] md:text-xs px-5 py-2.5 md:px-6 md:py-3 rounded-full shadow-lg shadow-blue-500/25 transform hover:-translate-y-0.5 transition-all duration-300 font-['Familjen_Grotesk'] outline-none"
       >
-        {/* Logo */}
-        <Link href="/" className="nav-target flex items-center space-x-3 group outline-none rounded-lg p-1" aria-label="Qurevo Technologies Home">
-          <Image 
-            src="/logo.png" 
-            alt="Qurevo Technologies Logo" 
-            width={48} 
-            height={48} 
-            className="w-10 h-auto md:w-12 transition-transform duration-300 group-hover:scale-105" 
-            priority
-          />
-          <span className="text-[1.1rem] md:text-xl font-black tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-blue-800 via-blue-600 to-sky-400 drop-shadow-sm group-hover:brightness-110 transition-all duration-300">
-            Qurevo Technologies
-          </span>
-        </Link>
+        Book Website
+      </button>
 
-        {/* Desktop Navigation Links - Updated Font & Uppercase */}
-        <div className="hidden md:flex items-center space-x-10">
-          {navLinks.map((item) => (
-            <Link
-              key={item.name}
-              href={item.href}
-              className="nav-target text-xs font-black uppercase tracking-widest text-slate-800 hover:text-blue-600 transition-colors duration-200 relative group outline-none font-['Familjen_Grotesk']"
-            >
-              {item.name}
-              <span className="absolute -bottom-1 left-0 w-0 h-[2px] bg-blue-600 transition-all duration-300 group-hover:w-full rounded-full" />
-            </Link>
-          ))}
-        </div>
-
-        {/* Action Button - Updated Font & Uppercase */}
-        <div className="hidden md:block">
-          <Link 
-            href="#book" 
-            className="nav-target bg-blue-600 hover:bg-blue-700 text-white font-black uppercase tracking-widest text-[10px] md:text-xs px-6 py-3 rounded-full flex items-center space-x-2 transition-all duration-300 hover:shadow-lg hover:shadow-blue-600/20 transform hover:-translate-y-0.5 outline-none font-['Familjen_Grotesk']"
-          >
-            <span>Book Website</span>
-            <span aria-hidden="true" className="text-sm">→</span>
-          </Link>
-        </div>
-
-        {/* Mobile Menu Toggle */}
-        <button 
-          className="nav-target md:hidden p-2 text-slate-900 outline-none"
-          onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-          aria-label="Toggle Menu"
-        >
-          <svg className="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            {mobileMenuOpen ? (
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-            ) : (
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
-            )}
-          </svg>
-        </button>
-      </nav>
-
-      {/* Mobile Dropdown - ADDED pointer-events-auto SO CLICKS REGISTER! */}
-      {mobileMenuOpen && (
-        <div className="md:hidden absolute top-24 left-4 right-4 bg-[#e2f2d0]/95 backdrop-blur-xl border border-white/50 rounded-3xl p-6 shadow-2xl z-40 flex flex-col space-y-5 pointer-events-auto">
-          
-          <div className="flex flex-col space-y-4 border-b border-white/40 pb-4">
-            {navLinks.map((link) => (
-              <Link 
-                key={link.name} 
-                href={link.href} 
-                onClick={() => setMobileMenuOpen(false)}
-                className="nav-target text-[15px] font-black text-slate-900 block uppercase tracking-widest font-['Familjen_Grotesk'] hover:text-blue-600 transition-colors"
-              >
-                {link.name}
-              </Link>
-            ))}
-          </div>
-
-          <Link 
-            href="#book"
-            onClick={() => setMobileMenuOpen(false)}
-            className="nav-target bg-blue-600 text-white font-black text-center py-3.5 rounded-full uppercase tracking-widest text-sm shadow-md shadow-blue-600/20 font-['Familjen_Grotesk']"
-          >
-            Book Website
-          </Link>
-          
-        </div>
-      )}
-    </header>
+      {/* 3. The Booking Modal Component */}
+      <BookingModal 
+        isOpen={isBookingOpen} 
+        onClose={() => setIsBookingOpen(false)} 
+      />
+    </>
   );
 }
