@@ -19,6 +19,20 @@ export const metadata: Metadata = {
     template: "%s | Qurevo Technologies"
   },
   description: "Qurevo Technologies (formerly H Studios) is the premier web development company based in Srinagar, Kashmir. We turn ideas into high-performance, fast, and modern websites that build your brand and scale your business.",
+  
+  // ADDED: Universal Favicon & PWA Manifest Configuration
+  icons: {
+    icon: [
+      { url: '/favicon.ico' },
+      { url: '/favicon-16x16.png', sizes: '16x16', type: 'image/png' },
+      { url: '/favicon-32x32.png', sizes: '32x32', type: 'image/png' },
+    ],
+    apple: [
+      { url: '/apple-touch-icon.png' }
+    ],
+  },
+  manifest: '/site.webmanifest',
+
   keywords: [
     "Qurevo",
     "Qurevo Technologies",
