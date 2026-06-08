@@ -214,7 +214,7 @@ export default function AdminPanel() {
         <div className="bg-white border border-slate-200 p-10 rounded-3xl w-full max-w-md shadow-[0_20px_60px_rgba(0,0,0,0.05)] relative z-10">
           <div className="flex flex-col items-center mb-8">
             <div className="w-16 h-16 bg-slate-50 border border-slate-100 rounded-2xl flex items-center justify-center shadow-sm mb-4">
-              <Image src="/logo.png" alt="Qurevo Technologies" width={40} height={40} className="object-contain" />
+              <Image src="https://res.cloudinary.com/dpqsadqxj/image/upload/q_auto/f_auto/v1780941361/logo_p83oao_oke7zd0000_sdggc1.webp" alt="Qurevo Technologies" width={40} height={40} className="object-contain" />
             </div>
             <h2 className="text-2xl font-black text-slate-900 tracking-tight">Admin Command</h2>
             <p className="text-xs text-slate-500 mt-1 font-medium">Location verification securely enforced.</p>
@@ -300,7 +300,7 @@ export default function AdminPanel() {
     <div className="min-h-screen bg-slate-50 text-slate-900">
       <nav className="bg-white border-b border-slate-200 px-8 py-4 flex justify-between items-center sticky top-0 z-50 shadow-sm">
         <div className="flex items-center space-x-3">
-          <Image src="/logo.png" alt="Qurevo Technologies" width={40} height={40} />
+          <Image src="https://res.cloudinary.com/dpqsadqxj/image/upload/q_auto/f_auto/v1780941361/logo_p83oao_oke7zd0000_sdggc1.webp" alt="Qurevo Technologies" width={40} height={40} />
           <span className="font-extrabold text-lg tracking-tight">Admin Dashboard</span>
         </div>
         <button onClick={() => signOut(auth)} className="text-xs font-bold bg-slate-100 hover:bg-red-50 text-slate-600 hover:text-red-600 px-4 py-2 rounded-lg transition-colors border border-slate-200 hover:border-red-100">

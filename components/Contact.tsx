@@ -165,7 +165,7 @@ export default function Contact() {
             <div className="flex items-start justify-between">
               <div>
                 <div className="w-14 h-14 md:w-20 md:h-20 rounded-xl md:rounded-[1.5rem] bg-white shadow-[0_6px_20px_rgba(0,0,0,0.05)] mb-5 md:mb-8 flex items-center justify-center border border-slate-100 transform hover:scale-105 transition-transform duration-500">
-                  <Image src="/logo.png" alt="Qurevo Technologies Brand Logo" width={48} height={48} className="w-8 md:w-12 h-auto object-contain" />
+                  <Image src="https://res.cloudinary.com/dpqsadqxj/image/upload/q_auto/f_auto/v1780941361/logo_p83oao_oke7zd0000_sdggc1.webp" alt="Qurevo Technologies Brand Logo" width={48} height={48} className="w-8 md:w-12 h-auto object-contain" />
                 </div>
                 <h3 className="text-xl sm:text-xl lg:text-2xl font-extrabold tracking-tight text-slate-900 mb-3 md:mb-4 drop-shadow-sm">Qurevo Technologies Srinagar</h3>
                 <p className="text-xs md:text-sm text-slate-900 leading-relaxed font-medium max-w-sm drop-shadow-sm">  

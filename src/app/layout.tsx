@@ -63,7 +63,7 @@ export const metadata: Metadata = {
     description: "High-performance websites that scale your digital footprint. Based in Srinagar, serving brands globally.",
     images: [
       {
-        url: "/logo.png", 
+        url: "https://res.cloudinary.com/dpqsadqxj/image/upload/q_auto/f_auto/v1780941361/logo_p83oao_oke7zd0000_sdggc1.webp", 
         width: 800,
         height: 800,
         alt: "Qurevo Technologies Official Logo",
@@ -74,7 +74,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "Qurevo Technologies | Web Development Agency",
     description: "We turn ideas into high-performance websites that build your brand. Top web development in Srinagar & Kashmir.",
-    images: ["/logo.png"],
+    images: ["https://res.cloudinary.com/dpqsadqxj/image/upload/q_auto/f_auto/v1780941361/logo_p83oao_oke7zd0000_sdggc1.webp"],
   },
   robots: {
     index: true,

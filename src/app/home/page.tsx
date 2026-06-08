@@ -15,7 +15,7 @@ export default function Home() {
     "@context": "https://schema.org",
     "@type": "ProfessionalService",
     "name": "Qurevo Technologies",
-    "image": "https://qurevo.in/logo.png", 
+    "image": "https://qurevo.inhttps://res.cloudinary.com/dpqsadqxj/image/upload/q_auto/f_auto/v1780941361/logo_p83oao_oke7zd0000_sdggc1.webp", 
     "@id": "https://qurevo.in", 
     "url": "https://qurevo.in", 
     "address": {

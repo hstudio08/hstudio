@@ -61,7 +61,7 @@ export default function Navbar() {
     <>
       <div className="hidden md:block">
         <PillNav
-          logo="/logo.png"
+          logo="https://res.cloudinary.com/dpqsadqxj/image/upload/q_auto/f_auto/v1780941361/logo_p83oao_oke7zd0000_sdggc1.webp"
           logoAlt="Qurevo Technologies Logo"
           items={navLinks}
           activeHref={pathname}
@@ -75,7 +75,7 @@ export default function Navbar() {
 
       <div className="block md:hidden">
         <BubbleMenu
-          logo={<img src="/logo.png" alt="Qurevo Technologies Logo" className="w-8 h-8" />}
+          logo={<img src="https://res.cloudinary.com/dpqsadqxj/image/upload/q_auto/f_auto/v1780941361/logo_p83oao_oke7zd0000_sdggc1.webp" alt="Qurevo Technologies Logo" className="w-8 h-8" />}
           items={bubbleMenuLinks}
           menuBg="#ffffff"
           menuContentColor="#0f172a"
