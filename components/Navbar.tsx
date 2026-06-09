@@ -38,6 +38,7 @@ export default function Navbar() {
         { label: 'Packages', href: '#packages', rotation: -3 },
       ] : []),
       { label: 'Who we are?', href: '/about', rotation: 3 },
+      { label: 'Blogs', href: '/blogs', rotation: -4 },
     ];
   }, [isHome]);
 

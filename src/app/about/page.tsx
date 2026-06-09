@@ -197,6 +197,67 @@ export default function AboutPage() {
           </div>
         </div>
 
+{/* NEW SECTION: Founder Biography Section */}
+        <div className="relative overflow-hidden bg-white border border-sky-100 p-6 md:p-10 rounded-3xl mt-8 shadow-sm">
+          {/* Soft blue radial background effect */}
+          <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_left,_var(--tw-gradient-stops))] from-sky-100/60 via-white to-white pointer-events-none"></div>
+
+          <div className="relative z-10 flex flex-col md:flex-row gap-8 items-start">
+            {/* Founder Image */}
+            <div className="shrink-0 mx-auto md:mx-0 relative">
+              {/* Soft glow behind the image */}
+              <div className="absolute inset-0 bg-blue-300/30 blur-2xl rounded-full scale-110 -z-10"></div>
+              <Image
+                src="/haadi-sabzar-founder-qurevotechnologies.png"
+                alt="Haadi Sabzar Lone - Founder of Qurevo Technologies"
+                width={180}
+                height={180}
+                className="rounded-4xl shadow-lg border-4 border-white object-cover"
+              />
+            </div>
+            
+            {/* Founder Text */}
+            <div className="flex-1">
+              <h3 className="text-2xl md:text-3xl font-extrabold text-slate-900 mb-1">Meet the Founder</h3>
+              <h4 className="text-lg font-bold text-blue-600 mb-4">Haadi Sabzar (Hadi Sabzar)</h4>
+              
+              <div className="text-slate-700 leading-relaxed text-sm md:text-base space-y-4">
+                <p>
+                  <strong>Haadi Sabzar</strong>, also known as Hadi Sabzar, is a young and passionate <strong className="text-slate-900">web developer from Bijbehara, Anantnag, Jammu & Kashmir</strong>. He is the Founder of Qurevo Technologies, a modern startup web agency built with a vision to help businesses grow online through high-quality, performance-driven digital solutions.
+                </p>
+                
+                {/* Native HTML details/summary for SEO-friendly "Read More" */}
+                <details className="group [&::-webkit-details-marker]:hidden">
+                  <summary className="cursor-pointer inline-flex items-center gap-1.5 font-bold text-blue-600 hover:text-blue-800 transition-colors list-none select-none mt-1">
+                    <span className="group-open:hidden flex items-center gap-1">Read Full Bio <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7"></path></svg></span>
+                    <span className="hidden group-open:flex items-center gap-1">Show Less <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 15l7-7 7 7"></path></svg></span>
+                  </summary>
+                  
+                  <div className="mt-5 space-y-4 pt-5 border-t border-sky-100">
+                    <p>
+                      Qurevo Technologies was originally started in 2024 as H Studios and later evolved into a full-fledged digital startup focused on delivering professional web development services. Under Haadi’s leadership, the agency specializes in building modern, fast, and scalable websites for businesses across Kashmir, including Srinagar, Anantnag, Kupwara, and Budgam, with a growing focus on wider markets.
+                    </p>
+                    <p>
+                      With hands-on experience in 10+ major web development projects, Haadi has worked with a diverse range of clients including restaurants, startups, personal brands, hotels, e-commerce stores, portfolios, and education consultancies. His work focuses on combining clean UI/UX design with strong technical performance to create impactful digital experiences.
+                    </p>
+                    <p>
+                      He is highly skilled in modern web technologies such as <strong>JavaScript, HTML, CSS, React, Next.js, Firebase, and Vercel</strong>, along with expertise in <strong className="text-slate-900">SEO, Google Search Console, and website optimization</strong>. His strengths lie in full-stack development, frontend engineering, SEO optimization, and building business-focused web applications that help improve visibility, user engagement, and conversions.
+                    </p>
+                    <p>
+                      Through Qurevo Technologies, Haadi’s mission is to help small and growing businesses establish a strong online presence, while also building a long-term digital agency that delivers value-driven web solutions across Kashmir and beyond.
+                    </p>
+                    <div className="bg-sky-50/80 p-4 rounded-xl border border-sky-100 mt-4 backdrop-blur-sm">
+                      <p className="text-sm font-medium text-slate-800">
+                        Connect with Qurevo Technologies through the contact form on our website or reach out directly at <a href="mailto:Qurevotechnologies@gmail.com" className="font-bold text-blue-600 hover:underline">Qurevotechnologies@gmail.com</a> for project inquiries and collaborations.
+                      </p>
+                    </div>
+                  </div>
+                </details>
+              </div>
+            </div>
+          </div>
+        </div>
+
         {/* Closing Section */}
         <div className="bg-sky-50 border border-sky-100 p-6 md:p-10 rounded-3xl mt-8">
           <div className="max-w-4xl">
@@ -210,7 +271,7 @@ export default function AboutPage() {
           </div>
         </div>
 
-        {/* NEW SECTION: Video Editing Services */}
+        {/* Video Editing Services */}
         <div className="bg-gradient-to-r from-slate-900 via-slate-800 to-slate-900 border border-slate-700 p-8 md:p-12 rounded-3xl mt-8 flex flex-col md:flex-row items-center justify-between gap-8 text-white shadow-xl relative overflow-hidden">
           <div className="absolute top-0 right-0 -mr-16 -mt-16 w-64 h-64 bg-indigo-500/20 blur-3xl rounded-full pointer-events-none"></div>
           <div className="max-w-3xl relative z-10">
