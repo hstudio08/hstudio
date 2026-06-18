@@ -2,27 +2,18 @@
 
 import React, { useState, useEffect } from 'react';
 import { db, auth } from '../../../lib/firebase';
-import { collection, getDocs, deleteDoc, doc, addDoc, updateDoc, serverTimestamp } from 'firebase/firestore';
-import { signInWithEmailAndPassword, onAuthStateChanged, signOut } from 'firebase/auth';
-import emailjs from '@emailjs/browser';
+import { collection, getDocs, deleteDoc, doc, updateDoc } from 'firebase/firestore';
+import { onAuthStateChanged, signOut } from 'firebase/auth';
 import Image from 'next/image';
+
+// Import the new login component
+import AdminLogin from '../../../components/AdminLogin';
 
 export default function AdminPanel() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState<'bookings' | 'reviews'>('bookings');
   
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [loginAttempts, setLoginAttempts] = useState(0);
-  const [isBlocked, setIsBlocked] = useState(false);
-  const [errorMsg, setErrorMsg] = useState('');
-  
-  const [bypassSent, setBypassSent] = useState(false);
-  const [bypassOtp, setBypassOtp] = useState('');
-  const [actualOtp, setActualOtp] = useState('');
-  const [otpCooldown, setOtpCooldown] = useState(0);
-
   const [bookings, setBookings] = useState<any[]>([]);
   const [reviews, setReviews] = useState<any[]>([]);
 
@@ -39,13 +30,6 @@ export default function AdminPanel() {
     });
     return () => unsubscribe();
   }, []);
-
-  useEffect(() => {
-    if (otpCooldown > 0) {
-      const timer = setTimeout(() => setOtpCooldown(prev => prev - 1), 1000);
-      return () => clearTimeout(timer);
-    }
-  }, [otpCooldown]);
 
   const fetchBookings = async () => {
     try {
@@ -109,93 +93,6 @@ export default function AdminPanel() {
     }
   };
 
-  const handleLogin = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (isBlocked) return;
-
-    setErrorMsg("Requesting secure location access...");
-    
-    if (!navigator.geolocation) {
-      setErrorMsg("Geolocation is not supported by your browser. Login denied.");
-      return;
-    }
-
-    navigator.geolocation.getCurrentPosition(
-      async (position) => {
-        try {
-          setErrorMsg("Authenticating...");
-          await addDoc(collection(db, "admin_login_logs"), {
-            email: email,
-            latitude: position.coords.latitude,
-            longitude: position.coords.longitude,
-            timestamp: serverTimestamp(),
-            status: "attempt"
-          });
-
-          await signInWithEmailAndPassword(auth, email, password);
-          setLoginAttempts(0);
-          setErrorMsg('');
-        } catch (error: any) {
-          const newAttempts = loginAttempts + 1;
-          setLoginAttempts(newAttempts);
-          
-          if (newAttempts >= 3) {
-            setIsBlocked(true);
-            setErrorMsg("Too many failed attempts. Security protocol triggered.");
-          } else {
-            let preciseError = "Invalid email or password.";
-            if (error.code === 'auth/user-not-found') preciseError = "No admin account found with this email.";
-            if (error.code === 'auth/wrong-password') preciseError = "Incorrect password.";
-            if (error.code === 'auth/invalid-credential') preciseError = "Invalid credentials. Ensure Email/Password Auth is enabled in Firebase.";
-            if (error.code === 'auth/too-many-requests') preciseError = "Account temporarily locked by Firebase due to too many failed attempts.";
-            
-            setErrorMsg(`${preciseError} (Attempts left: ${3 - newAttempts})`);
-          }
-        }
-      },
-      (error) => {
-        setErrorMsg("Location access is strictly required to login to Qurevo Admin.");
-      }
-    );
-  };
-
-  const handleSendBypass = async () => {
-    if (otpCooldown > 0) return;
-
-    const otp = Math.floor(100000 + Math.random() * 900000).toString();
-    setActualOtp(otp);
-    
-    try {
-      await emailjs.send(
-        process.env.NEXT_PUBLIC_EMAILJS_SERVICE_ID!,
-        process.env.NEXT_PUBLIC_EMAILJS_TEMPLATE_ID!,
-        {
-          to_email: process.env.NEXT_PUBLIC_ADMIN_EMAIL,
-          passcode: otp,
-          time: new Date(Date.now() + 15 * 60000).toLocaleTimeString()
-        },
-        process.env.NEXT_PUBLIC_EMAILJS_PUBLIC_KEY!
-      );
-      setBypassSent(true);
-      setOtpCooldown(45);
-      setErrorMsg("Bypass OTP sent to Master Admin email.");
-    } catch (err) {
-      setErrorMsg("Failed to send Bypass OTP. Please check EmailJS configuration.");
-    }
-  };
-
-  const handleVerifyBypass = () => {
-    if (bypassOtp === actualOtp && actualOtp !== '') {
-      setIsBlocked(false);
-      setLoginAttempts(0);
-      setBypassSent(false);
-      setBypassOtp('');
-      setErrorMsg("Security block lifted. You may now login.");
-    } else {
-      setErrorMsg("Invalid Bypass OTP. Please try again.");
-    }
-  };
-
   if (loading) {
     return (
       <div className="min-h-screen flex flex-col items-center justify-center bg-slate-50">
@@ -205,97 +102,12 @@ export default function AdminPanel() {
     );
   }
 
+  // If not authenticated, show the separate login component
   if (!isAuthenticated) {
-    return (
-      <div className="min-h-screen bg-slate-50 flex items-center justify-center px-4 relative overflow-hidden">
-        <div className="absolute top-0 right-0 w-[30rem] h-[30rem] bg-blue-100/40 rounded-full blur-[120px] pointer-events-none" />
-        <div className="absolute bottom-0 left-0 w-[30rem] h-[30rem] bg-[#a7fcfb]/20 rounded-full blur-[120px] pointer-events-none" />
-        
-        <div className="bg-white border border-slate-200 p-10 rounded-3xl w-full max-w-md shadow-[0_20px_60px_rgba(0,0,0,0.05)] relative z-10">
-          <div className="flex flex-col items-center mb-8">
-            <div className="w-16 h-16 bg-slate-50 border border-slate-100 rounded-2xl flex items-center justify-center shadow-sm mb-4">
-              <Image src="https://res.cloudinary.com/dpqsadqxj/image/upload/q_auto/f_auto/v1780941361/logo_p83oao_oke7zd0000_sdggc1.webp" alt="Qurevo Technologies" width={40} height={40} className="object-contain" />
-            </div>
-            <h2 className="text-2xl font-black text-slate-900 tracking-tight">Admin Command</h2>
-            <p className="text-xs text-slate-500 mt-1 font-medium">Location verification securely enforced.</p>
-          </div>
-
-          {errorMsg && (
-            <div className={`p-4 rounded-xl mb-6 text-xs font-semibold border transition-all ${isBlocked ? 'bg-red-50 border-red-200 text-red-600' : 'bg-orange-50 border-orange-200 text-orange-600'}`}>
-              {errorMsg}
-            </div>
-          )}
-
-          {isBlocked ? (
-            <div className="space-y-4 animate-in fade-in zoom-in duration-300">
-              <div className="text-center p-6 bg-red-50 border border-red-100 rounded-2xl">
-                <span className="text-4xl mb-3 block">🔒</span>
-                <p className="text-sm text-red-600 font-extrabold mb-5 uppercase tracking-wide">System Locked</p>
-                
-                {!bypassSent ? (
-                  <button 
-                    onClick={handleSendBypass} 
-                    disabled={otpCooldown > 0}
-                    className="w-full bg-slate-900 hover:bg-slate-800 disabled:bg-slate-300 disabled:cursor-not-allowed text-white font-bold text-sm px-4 py-3.5 rounded-xl transition-colors shadow-md"
-                  >
-                    {otpCooldown > 0 ? `Please wait ${otpCooldown}s to resend` : 'Request Bypass OTP'}
-                  </button>
-                ) : (
-                  <div className="flex gap-2">
-                    <input 
-                      type="text" 
-                      placeholder="6-Digit OTP" 
-                      value={bypassOtp}
-                      onChange={(e) => setBypassOtp(e.target.value.replace(/\D/g, '').slice(0, 6))}
-                      className="flex-1 bg-white border border-slate-300 focus:border-blue-400 focus:ring-4 focus:ring-blue-500/10 rounded-xl px-4 py-3 text-center tracking-[0.3em] font-bold text-slate-900 outline-none shadow-sm transition-all"
-                    />
-                    <button onClick={handleVerifyBypass} className="bg-blue-600 hover:bg-blue-700 text-white font-bold px-5 py-3 rounded-xl shadow-sm transition-colors">
-                      Verify
-                    </button>
-                  </div>
-                )}
-                
-                {bypassSent && otpCooldown > 0 && (
-                  <p className="text-[10px] text-slate-400 mt-4 font-medium">
-                    You can request a new OTP in {otpCooldown} seconds.
-                  </p>
-                )}
-              </div>
-            </div>
-          ) : (
-            <form onSubmit={handleLogin} className="space-y-5">
-              <div>
-                <label className="block text-xs font-bold text-slate-700 mb-2 ml-1">Admin Email</label>
-                <input 
-                  type="email" 
-                  required 
-                  placeholder="admin@qurevo.in" 
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  className="w-full bg-slate-50 border border-slate-200 focus:border-blue-400 focus:ring-4 focus:ring-blue-500/10 rounded-xl px-4 py-3.5 text-sm text-slate-900 placeholder-slate-400 outline-none transition-all shadow-sm"
-                />
-              </div>
-              <div>
-                <label className="block text-xs font-bold text-slate-700 mb-2 ml-1">Secure Password</label>
-                <input 
-                  type="password" 
-                  required 
-                  placeholder="••••••••" 
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  className="w-full bg-slate-50 border border-slate-200 focus:border-blue-400 focus:ring-4 focus:ring-blue-500/10 rounded-xl px-4 py-3.5 text-sm text-slate-900 placeholder-slate-400 outline-none transition-all shadow-sm"
-                />
-              </div>
-              <button type="submit" className="w-full bg-blue-600 hover:bg-blue-700 text-white font-extrabold text-sm px-6 py-4 rounded-xl shadow-md shadow-blue-500/20 transition-all duration-300 hover:-translate-y-0.5 mt-2">
-                Authenticate Securely
-              </button>
-            </form>
-          )}
-        </div>
-      </div>
-    );
+    return <AdminLogin />;
   }
 
+  // Admin Dashboard UI (Only shown when authenticated)
   return (
     <div className="min-h-screen bg-slate-50 text-slate-900">
       <nav className="bg-white border-b border-slate-200 px-8 py-4 flex justify-between items-center sticky top-0 z-50 shadow-sm">
@@ -309,8 +121,6 @@ export default function AdminPanel() {
       </nav>
 
       <main className="max-w-7xl mx-auto px-4 sm:px-8 py-10">
-        
-        {/* Navigation Tabs */}
         <div className="flex space-x-4 mb-8">
           <button 
             onClick={() => setActiveTab('bookings')}
