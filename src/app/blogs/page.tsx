@@ -73,7 +73,7 @@ export default function BlogsPage() {
                   </div>
                   <div className="flex flex-col">
                     <span className="text-[9px] sm:text-[11px] font-bold text-slate-900 leading-tight">{post.frontmatter.author}</span>
-                    <span className="hidden sm:inline-block text-[8px] sm:text-[9px] text-slate-500 leading-tight">Expert Insights</span>
+                    <span className="hidden sm:inline-block text-[8px] sm:text-[9px] text-slate-500 leading-tight">Founder & Innovator</span>
                   </div>
                 </div>
               </div>
