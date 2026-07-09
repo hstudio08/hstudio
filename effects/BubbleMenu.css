@@ -141,5 +141,5 @@
 .bubble-menu-items .pill-link .pill-label {
   display: inline-block;
   will-change: transform, opacity;
-  line-height: 1;
+line-height: 1;
 }
