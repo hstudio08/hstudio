@@ -39,3 +39,7 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# myfiles
+# Ignore the exam page for now
+src/app/exam/
