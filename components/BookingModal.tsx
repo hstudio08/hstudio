@@ -44,6 +44,22 @@ export default function BookingModal({ isOpen, onClose }: BookingModalProps) {
     };
   }, [isOpen]);
 
+  // Auto-verify OTP when 6 digits are entered
+  useEffect(() => {
+    if (otpCode.length === 6 && otpStatus === 'sent') {
+      setOtpStatus('verifying');
+      setTimeout(() => {
+        if (otpCode === actualOtp) {
+          setOtpStatus('verified');
+        } else {
+          alert("Invalid OTP. Please try again.");
+          setOtpStatus('sent');
+          setOtpCode('');
+        }
+      }, 500); 
+    }
+  }, [otpCode, otpStatus, actualOtp]);
+
   if (!isOpen) return null;
 
   // Validation Logic
@@ -60,7 +76,11 @@ export default function BookingModal({ isOpen, onClose }: BookingModalProps) {
   // OTP Logic
   const handleSendOTP = async (e: React.MouseEvent) => {
     e.preventDefault();
-    if (!formData.email) return alert("Please enter your email first.");
+    
+    if (!formData.name.trim() || !formData.phone.trim()) {
+      return alert("Please enter your Full Name and Phone number before sending the OTP.");
+    }
+    if (!formData.email.trim()) return alert("Please enter your email first.");
     
     setOtpStatus('sending');
     const generatedOTP = Math.floor(100000 + Math.random() * 900000).toString();
@@ -100,16 +120,28 @@ export default function BookingModal({ isOpen, onClose }: BookingModalProps) {
     }, 500); 
   };
 
-  // Final Submission Logic
+// Final Submission Logic
   const handleComplete = async () => {
     setIsSubmitting(true);
+    
+    let firebaseSuccess = false;
+    let emailSuccess = false;
+
+    // 1. Attempt to save to Firebase safely
     try {
       await addDoc(collection(db, "booking_requests"), {
         ...formData,
         timestamp: serverTimestamp(),
         status: "new"
       });
+      firebaseSuccess = true;
+    } catch (dbError) {
+      // If Firebase fails, we log it, but it WON'T stop the email from sending
+      console.error("Firebase Error (Check Firestore rules or env config):", dbError);
+    }
 
+    // 2. Attempt to send Admin Email safely
+    try {
       await emailjs.send(
         process.env.NEXT_PUBLIC_EMAILJS_SERVICE_ID!,
         process.env.NEXT_PUBLIC_EMAILJS_ADMIN_TEMPLATE_ID!, 
@@ -123,13 +155,20 @@ export default function BookingModal({ isOpen, onClose }: BookingModalProps) {
         },
         process.env.NEXT_PUBLIC_EMAILJS_PUBLIC_KEY!
       );
+      emailSuccess = true;
+    } catch (emailError) {
+      console.error("EmailJS Error:", emailError);
+    }
 
-      setIsSuccess(true);
-    } catch (error) {
-      console.error("Error submitting booking:", error);
-      alert("Something went wrong. Please try again.");
-    } finally {
-      setIsSubmitting(false);
+    setIsSubmitting(false);
+
+    // 3. Determine Success State
+    if (firebaseSuccess || emailSuccess) {
+      // If AT LEAST ONE worked, show the success screen to the user
+      setIsSuccess(true); 
+    } else {
+      // If BOTH failed, show an error
+      alert("Submission failed. Please check your browser console for errors and try again.");
     }
   };
 
@@ -152,30 +191,48 @@ export default function BookingModal({ isOpen, onClose }: BookingModalProps) {
         onClick={resetAndClose}
       />
 
-      {/* Modal Container: Optimized for all screens */}
+      {/* Modal Container */}
       <div className="relative w-full max-w-[95%] sm:max-w-md bg-white rounded-[1.5rem] sm:rounded-[2rem] shadow-2xl flex flex-col max-h-[92vh] sm:max-h-[90vh] overflow-hidden z-10">
         
-        {/* FIXED Header area (Slimmed down to save vertical space) */}
+        {/* Header area */}
         <div className="flex items-center justify-between px-5 sm:px-6 pt-4 pb-3 border-b border-slate-100 bg-white shrink-0">
           <div className="flex items-center">
             <Image src="/icons/fulllogo.png" alt="Qurevo Logo" width={1056} height={733} className="h-10 sm:h-22 w-auto object-contain" />
           </div>
-          <button onClick={resetAndClose} className="p-1.5 text-slate-400 hover:text-slate-800 bg-slate-50 hover:bg-slate-100 rounded-full transition-colors outline-none">
+          <button type="button" onClick={resetAndClose} className="p-1.5 text-slate-400 hover:text-slate-800 bg-slate-50 hover:bg-slate-100 rounded-full transition-colors outline-none">
             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12"></path></svg>
           </button>
         </div>
 
-        {/* SCROLLABLE Body area */}
+        {/* Body area */}
         <div className="overflow-y-auto overscroll-contain flex-1 p-4 sm:p-6 pb-10 scrollbar-hide">
           {isSuccess ? (
-            /* Success State */
+            /* Success State with Celebration Animation */
             <div className="text-center flex flex-col items-center justify-center h-full py-6">
-              <div className="w-14 h-14 bg-emerald-100 text-emerald-500 rounded-full flex items-center justify-center mb-4">
-                <svg className="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M5 13l4 4L19 7"></path></svg>
+              <div className="relative mb-6">
+                <div className="absolute -top-2 -left-4 text-yellow-400 sparkle-1 text-xl">✨</div>
+                <div className="absolute -top-5 right-[-10px] text-yellow-400 sparkle-2 text-2xl">✨</div>
+                <div className="absolute top-6 -right-6 text-yellow-400 sparkle-3 text-lg">✨</div>
+                
+                <div className="w-16 h-16 bg-emerald-100 text-emerald-500 rounded-full flex items-center justify-center animate-success-pop shadow-[0_0_25px_rgba(16,185,129,0.4)] relative z-10">
+                  <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3.5" d="M5 13l4 4L19 7"></path>
+                  </svg>
+                </div>
               </div>
-              <h3 className="text-xl font-black text-slate-900 mb-2">Request Sent!</h3>
-              <p className="text-sm text-slate-600 mb-6 px-2">Our team will contact you shortly to discuss your digital transformation.</p>
-              <button onClick={resetAndClose} className="bg-slate-900 text-white font-bold py-2.5 px-6 rounded-full hover:bg-slate-800 transition-colors w-full sm:w-auto text-base sm:text-sm">
+              
+              <h3 className="text-xl font-black text-slate-900 mb-2 animate-fade-in-up" style={{ animationDelay: '0.2s', animationFillMode: 'forwards', opacity: 0 }}>
+                Request Sent!
+              </h3>
+              <p className="text-sm text-slate-600 mb-6 px-2 animate-fade-in-up" style={{ animationDelay: '0.3s', animationFillMode: 'forwards', opacity: 0 }}>
+                Our team will contact you shortly to discuss your digital transformation.
+              </p>
+              <button 
+                type="button" 
+                onClick={resetAndClose} 
+                className="bg-slate-900 text-white font-bold py-2.5 px-6 rounded-full hover:bg-slate-800 transition-colors w-full sm:w-auto text-base sm:text-sm animate-fade-in-up"
+                style={{ animationDelay: '0.4s', animationFillMode: 'forwards', opacity: 0 }}
+              >
                 Close Window
               </button>
             </div>
@@ -190,9 +247,6 @@ export default function BookingModal({ isOpen, onClose }: BookingModalProps) {
             >
               {/* STEP 1: Personal Details & OTP */}
               <Step>
-                {/* FIX: pb-24 adds huge padding at the bottom of this specific step. 
-                  This ensures the user can scroll the OTP field totally above the Stepper's fixed footer!
-                */}
                 <div className="pb-24 sm:pb-20">
                   <h2 className="text-lg sm:text-xl font-extrabold text-slate-900 mb-1">Let's get started</h2>
                   <p className="text-xs text-slate-500 mb-4">We need your basic details to verify your identity.</p>
@@ -201,12 +255,10 @@ export default function BookingModal({ isOpen, onClose }: BookingModalProps) {
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                       <div>
                         <label className="block text-[10px] font-bold text-slate-700 uppercase tracking-wide mb-1">Full Name *</label>
-                        {/* FIX: text-base on mobile prevents iOS safari auto-zoom */}
                         <input type="text" value={formData.name} onChange={e => setFormData({...formData, name: e.target.value})} className="w-full bg-slate-50 border border-slate-200 rounded-lg px-3 py-2.5 sm:py-2 text-base sm:text-sm font-medium outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100 transition-all" placeholder="John Doe" required />
                       </div>
                       <div>
                         <label className="block text-[10px] font-bold text-slate-700 uppercase tracking-wide mb-1">Phone *</label>
-                        {/* FIX: text-base on mobile prevents iOS safari auto-zoom */}
                         <input type="tel" value={formData.phone} onChange={e => setFormData({...formData, phone: e.target.value})} className="w-full bg-slate-50 border border-slate-200 rounded-lg px-3 py-2.5 sm:py-2 text-base sm:text-sm font-medium outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100 transition-all" placeholder="+91..." required />
                       </div>
                     </div>
@@ -216,7 +268,6 @@ export default function BookingModal({ isOpen, onClose }: BookingModalProps) {
                       {otpStatus === 'verified' && <div className="absolute inset-0 bg-green-500/10 pointer-events-none" />}
                       
                       <div className="flex flex-col sm:flex-row gap-2 relative z-10">
-                        {/* FIX: text-base on mobile prevents iOS safari auto-zoom */}
                         <input 
                           type="email" 
                           value={formData.email}
@@ -229,6 +280,7 @@ export default function BookingModal({ isOpen, onClose }: BookingModalProps) {
                         
                         {otpStatus !== 'verified' && (
                           <button 
+                            type="button"
                             onClick={handleSendOTP}
                             disabled={otpStatus === 'sending' || otpStatus === 'verifying'}
                             className="bg-blue-600 hover:bg-blue-700 text-white font-bold text-[13px] sm:text-xs px-4 py-2.5 sm:py-2 rounded-lg transition-all shadow-sm disabled:opacity-50 flex items-center justify-center min-w-[90px] outline-none"
@@ -244,11 +296,10 @@ export default function BookingModal({ isOpen, onClose }: BookingModalProps) {
                         )}
                       </div>
 
-                      {/* OTP Code Entry Input */}
-                      <div className={`grid transition-all duration-300 ease-in-out ${otpStatus === 'sent' || otpStatus === 'verifying' ? 'grid-rows-[1fr] opacity-100 mt-2' : 'grid-rows-[0fr] opacity-0 mt-0'}`}>
-                        <div className="overflow-hidden">
+                      {/* OTP Code Entry */}
+                      {otpStatus !== 'verified' && (
+                        <div className={`transition-all duration-300 ease-in-out overflow-hidden ${otpStatus === 'sent' || otpStatus === 'verifying' ? 'max-h-[100px] opacity-100 mt-2' : 'max-h-0 opacity-0 mt-0'}`}>
                           <div className="flex gap-2 relative z-10 pt-1 pb-1">
-                            {/* FIX: text-base on mobile prevents iOS safari auto-zoom */}
                             <input 
                               type="text" 
                               placeholder="6-digit OTP" 
@@ -257,6 +308,7 @@ export default function BookingModal({ isOpen, onClose }: BookingModalProps) {
                               className="flex-1 bg-white border border-slate-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 rounded-lg px-3 py-2.5 sm:py-2 text-base sm:text-sm text-center tracking-[0.2em] sm:tracking-[0.3em] text-slate-900 font-extrabold outline-none"
                             />
                             <button 
+                              type="button"
                               onClick={handleVerifyOTP}
                               disabled={otpCode.length < 4 || otpStatus === 'verifying'}
                               className="bg-slate-900 hover:bg-slate-800 disabled:bg-slate-400 text-white font-bold text-[13px] sm:text-xs px-4 py-2.5 sm:py-2 rounded-lg transition-all shadow-sm flex items-center justify-center min-w-[90px] outline-none"
@@ -265,7 +317,7 @@ export default function BookingModal({ isOpen, onClose }: BookingModalProps) {
                             </button>
                           </div>
                         </div>
-                      </div>
+                      )}
                     </div>
                   </div>
                 </div>
@@ -307,7 +359,6 @@ export default function BookingModal({ isOpen, onClose }: BookingModalProps) {
                   <p className="text-xs text-slate-500 mb-4">Briefly describe your project. We'll handle the rest.</p>
                   
                   <div className="relative pb-2">
-                    {/* FIX: text-base on mobile prevents iOS safari auto-zoom */}
                     <textarea 
                       value={formData.message} 
                       onChange={e => {
@@ -345,7 +396,33 @@ export default function BookingModal({ isOpen, onClose }: BookingModalProps) {
           -ms-overflow-style: none;
           scrollbar-width: none;
         }
+
+        /* Celebration Animations */
+        @keyframes successPop {
+          0% { transform: scale(0); opacity: 0; }
+          60% { transform: scale(1.15); opacity: 1; }
+          100% { transform: scale(1); opacity: 1; }
+        }
+        @keyframes sparkleFloat {
+          0% { transform: translateY(0) scale(0) rotate(0deg); opacity: 0; }
+          50% { opacity: 1; transform: scale(1) rotate(15deg); }
+          100% { transform: translateY(-25px) scale(0) rotate(30deg); opacity: 0; }
+        }
+        @keyframes fadeInUp {
+          0% { transform: translateY(15px); opacity: 0; }
+          100% { transform: translateY(0); opacity: 1; }
+        }
+
+        .animate-success-pop {
+          animation: successPop 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+        }
+        .animate-fade-in-up {
+          animation: fadeInUp 0.5s ease-out forwards;
+        }
+        .sparkle-1 { animation: sparkleFloat 1.2s ease-in-out forwards; animation-delay: 0.1s; }
+        .sparkle-2 { animation: sparkleFloat 1.2s ease-in-out forwards; animation-delay: 0.3s; }
+        .sparkle-3 { animation: sparkleFloat 1.2s ease-in-out forwards; animation-delay: 0.45s; }
       `}} />
     </div>
   );
-}
+} 

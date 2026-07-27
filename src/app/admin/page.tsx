@@ -5,7 +5,6 @@ import { db, auth } from '../../../lib/firebase';
 import { collection, getDocs, deleteDoc, doc, updateDoc } from 'firebase/firestore';
 import { onAuthStateChanged, signOut } from 'firebase/auth';
 import Image from 'next/image';
-
 // Import the new login component
 import AdminLogin from '../../../components/AdminLogin';
 
@@ -119,7 +118,6 @@ export default function AdminPanel() {
           Sign Out
         </button>
       </nav>
-
       <main className="max-w-7xl mx-auto px-4 sm:px-8 py-10">
         <div className="flex space-x-4 mb-8">
           <button 
@@ -283,5 +281,6 @@ export default function AdminPanel() {
         )}
       </main>
     </div>
+    
   );
 }
