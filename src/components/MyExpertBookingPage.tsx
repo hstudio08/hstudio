@@ -738,11 +738,6 @@ Terms & Conditions Agreed: YES
             <span className="text-white">:</span>
             <span className="text-[#D4AF37] font-black text-sm">{String(timeLeft.seconds).padStart(2, '0')}s</span>
           </div>
-
-          <div className="flex items-center space-x-1.5 bg-[#D4AF37]/20 text-[#D4AF37] px-3 py-1 rounded-lg border border-[#D4AF37]/40 text-[11px] font-extrabold">
-            <span>⚡ 3 / 5 Spots Claimed</span>
-            <span className="text-white font-normal text-[10px] hidden sm:inline">(Only 2 Left)</span>
-          </div>
         </div>
       )}
 
