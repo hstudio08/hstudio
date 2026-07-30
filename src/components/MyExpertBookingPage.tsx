@@ -67,22 +67,34 @@ export default function MyExpertBookingPage({ slug }: MyExpertBookingPageProps) 
   // Package State
   const [selectedPackage, setSelectedPackage] = useState<'Starter' | 'Growth' | 'Premium'>('Growth');
 
-  // 24-Hour Live Countdown Timer State (Valid for First 5 Clients)
-  const [timeLeft, setTimeLeft] = useState({ hours: 23, minutes: 59, seconds: 59 });
+  // Real Countdown Timer State (Target: 31st July 2026 at 5:00 PM IST)
+  const [timeLeft, setTimeLeft] = useState<{ hours: number; minutes: number; seconds: number; isExpired: boolean }>({
+    hours: 0,
+    minutes: 0,
+    seconds: 0,
+    isExpired: false
+  });
 
   useEffect(() => {
-    // 24-hour countdown timer
-    const targetTime = Date.now() + 24 * 60 * 60 * 1000;
-    const timer = setInterval(() => {
-      const now = Date.now();
-      const difference = Math.max(0, targetTime - now);
-      
-      const hours = Math.floor((difference / (1000 * 60 * 60)) % 24);
-      const minutes = Math.floor((difference / 1000 / 60) % 60);
-      const seconds = Math.floor((difference / 1000) % 60);
+    // Real Target Deadline: 31st July 2026 at 5:00 PM IST (17:00:00)
+    const TARGET_DEADLINE = new Date('2026-07-31T17:00:00+05:30').getTime();
 
-      setTimeLeft({ hours, minutes, seconds });
-    }, 1000);
+    const updateTimer = () => {
+      const now = Date.now();
+      const difference = TARGET_DEADLINE - now;
+
+      if (difference <= 0) {
+        setTimeLeft({ hours: 0, minutes: 0, seconds: 0, isExpired: true });
+      } else {
+        const hours = Math.floor(difference / (1000 * 60 * 60));
+        const minutes = Math.floor((difference / (1000 * 60)) % 60);
+        const seconds = Math.floor((difference / 1000) % 60);
+        setTimeLeft({ hours, minutes, seconds, isExpired: false });
+      }
+    };
+
+    updateTimer();
+    const timer = setInterval(updateTimer, 1000);
 
     return () => clearInterval(timer);
   }, []);
@@ -476,6 +488,11 @@ export default function MyExpertBookingPage({ slug }: MyExpertBookingPageProps) 
   // Step 1 Validation & Gating (Name + Phone + FREE Valid Coupon required)
   // -------------------------------------------------------------
   const handleProceedFromStep1 = async () => {
+    if (timeLeft.isExpired) {
+      alert('This special offer expired on July 31, 2026 at 5:00 PM IST.');
+      return;
+    }
+
     setNameError(null);
     setPhoneError(null);
     setCouponError(null);
@@ -546,6 +563,11 @@ export default function MyExpertBookingPage({ slug }: MyExpertBookingPageProps) 
   // Final Submission Handler
   // -------------------------------------------------------------
   const handleSubmitBooking = async () => {
+    if (timeLeft.isExpired) {
+      alert('This special offer expired on July 31, 2026 at 5:00 PM IST.');
+      return;
+    }
+
     if (!agreedToTerms) {
       alert('Please accept the Terms & Conditions and Privacy Policy to complete your booking.');
       return;
@@ -692,31 +714,37 @@ Terms & Conditions Agreed: YES
         className={`fixed inset-0 pointer-events-none z-[9999] transition-opacity duration-300 ${showConfetti ? 'opacity-100' : 'opacity-0'}`}
       />
 
-      {/* TOPMOST 24-HOUR COUNTDOWN BANNER */}
-      <div className="bg-[#1B4D3E] text-white py-2.5 px-4 text-center border-b-2 border-[#D4AF37] shadow-md sticky top-0 z-50 w-full flex flex-wrap items-center justify-between sm:justify-around gap-2 text-xs font-bold">
-        <div className="flex items-center space-x-2">
-          <span className="bg-[#D4AF37] text-slate-900 px-2.5 py-0.5 rounded-md text-[10px] font-black uppercase tracking-wider animate-pulse shadow-sm">
-            🔥 LIMITED OFFER
-          </span>
-          <span className="text-[#D4AF37] font-extrabold uppercase tracking-wide hidden sm:inline">
-            Valid for First 5 MyExpert Clients Only
-          </span>
+      {/* TOPMOST REAL DEADLINE COUNTDOWN BANNER (DEADLINE: 31st July 2026 at 5:00 PM IST) */}
+      {timeLeft.isExpired ? (
+        <div className="bg-red-900 text-white py-3 px-4 text-center border-b-2 border-red-500 shadow-lg sticky top-0 z-50 w-full flex items-center justify-center gap-2 text-xs sm:text-sm font-black uppercase tracking-wider">
+          <span>🚨 OFFER ENDED: 30% Payback Special Invitation Expired at 5:00 PM on 31/07!</span>
         </div>
+      ) : (
+        <div className="bg-[#1B4D3E] text-white py-2.5 px-4 text-center border-b-2 border-[#D4AF37] shadow-md sticky top-0 z-50 w-full flex flex-wrap items-center justify-between sm:justify-around gap-2 text-xs font-bold">
+          <div className="flex items-center space-x-2">
+            <span className="bg-[#D4AF37] text-slate-900 px-2.5 py-0.5 rounded-md text-[10px] font-black uppercase tracking-wider animate-pulse shadow-sm">
+              🔥 EXPIRES TOMORROW 5 PM
+            </span>
+            <span className="text-[#D4AF37] font-extrabold uppercase tracking-wide hidden sm:inline">
+              Valid Till 31/07 at 5:00 PM Only
+            </span>
+          </div>
 
-        <div className="flex items-center space-x-2 font-mono bg-black/30 px-3.5 py-1 rounded-xl border border-[#D4AF37]/50 shadow-inner">
-          <span className="text-slate-300 text-[10px] uppercase font-sans font-bold mr-1">Offer Expires In:</span>
-          <span className="text-[#D4AF37] font-black text-sm">{String(timeLeft.hours).padStart(2, '0')}h</span>
-          <span className="text-white">:</span>
-          <span className="text-[#D4AF37] font-black text-sm">{String(timeLeft.minutes).padStart(2, '0')}m</span>
-          <span className="text-white">:</span>
-          <span className="text-[#D4AF37] font-black text-sm">{String(timeLeft.seconds).padStart(2, '0')}s</span>
-        </div>
+          <div className="flex items-center space-x-2 font-mono bg-black/30 px-3.5 py-1 rounded-xl border border-[#D4AF37]/50 shadow-inner">
+            <span className="text-slate-300 text-[10px] uppercase font-sans font-bold mr-1">Offer Expires In:</span>
+            <span className="text-[#D4AF37] font-black text-sm">{String(timeLeft.hours).padStart(2, '0')}h</span>
+            <span className="text-white">:</span>
+            <span className="text-[#D4AF37] font-black text-sm">{String(timeLeft.minutes).padStart(2, '0')}m</span>
+            <span className="text-white">:</span>
+            <span className="text-[#D4AF37] font-black text-sm">{String(timeLeft.seconds).padStart(2, '0')}s</span>
+          </div>
 
-        <div className="flex items-center space-x-1.5 bg-[#D4AF37]/20 text-[#D4AF37] px-3 py-1 rounded-lg border border-[#D4AF37]/40 text-[11px] font-extrabold">
-          <span>⚡ 3 / 5 Spots Claimed</span>
-          <span className="text-white font-normal text-[10px] hidden sm:inline">(Only 2 Left)</span>
+          <div className="flex items-center space-x-1.5 bg-[#D4AF37]/20 text-[#D4AF37] px-3 py-1 rounded-lg border border-[#D4AF37]/40 text-[11px] font-extrabold">
+            <span>⚡ 3 / 5 Spots Claimed</span>
+            <span className="text-white font-normal text-[10px] hidden sm:inline">(Only 2 Left)</span>
+          </div>
         </div>
-      </div>
+      )}
 
       {/* MAIN CONTAINER */}
       <main className="relative w-full px-2 sm:px-4 md:px-6 lg:px-8 py-6 sm:py-10 flex-1 space-y-10 sm:space-y-14">
@@ -922,8 +950,23 @@ Terms & Conditions Agreed: YES
               </div>
             </div>
 
-            {/* SUCCESS SCREEN */}
-            {isSuccess ? (
+            {/* EXPIRED SCREEN / SUCCESS SCREEN / ACTIVE FORM */}
+            {timeLeft.isExpired ? (
+              <div className="text-center py-10 px-6 space-y-4 bg-red-50 border-2 border-red-500 rounded-2xl animate-fade-in">
+                <div className="w-16 h-16 bg-red-600 text-white rounded-full flex items-center justify-center mx-auto text-2xl font-bold shadow-md">
+                  ⌛
+                </div>
+                <h3 className="font-['Bebas_Neue'] text-4xl sm:text-5xl font-black text-red-900 uppercase tracking-wider">
+                  Offer Ended
+                </h3>
+                <p className="text-sm font-bold text-slate-800 max-w-md mx-auto leading-relaxed">
+                  This exclusive 30% payback offer for MyExpert clients expired on <strong className="text-red-700 font-black">July 31, 2026 at 5:00 PM IST</strong>.
+                </p>
+                <p className="text-xs text-slate-500 font-medium">
+                  New bookings are no longer being accepted for this promotion. Thank you for your interest.
+                </p>
+              </div>
+            ) : isSuccess ? (
               <div className="text-center py-8 space-y-5 animate-fade-in bg-slate-50 p-8 rounded-2xl border-2 border-[#1B4D3E]">
                 <div className="w-16 h-16 bg-[#1B4D3E] text-[#D4AF37] border-2 border-[#D4AF37] rounded-full flex items-center justify-center mx-auto text-2xl font-bold shadow-md">
                   ✓
