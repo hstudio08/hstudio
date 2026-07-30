@@ -238,6 +238,23 @@ export default function MyExpertBookingPage({ slug }: MyExpertBookingPageProps) 
   const currentProgress = calculateProgress();
 
   // -------------------------------------------------------------
+  // Automatically generate & maintain a random string token at the end of the URL
+  // -------------------------------------------------------------
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const pathSegments = window.location.pathname.split('/').filter(Boolean);
+      const lastSegment = pathSegments[pathSegments.length - 1] || '';
+
+      // Check if last segment is already a random token starting with qx-
+      if (!lastSegment.startsWith('qx-') || lastSegment.length < 8) {
+        const randomToken = 'qx-' + Math.random().toString(36).substring(2, 10).toUpperCase();
+        const newPath = `/collab/myexpert/web-booking/${randomToken}`;
+        window.history.replaceState({ page: 'myexpert-booking' }, '', newPath);
+      }
+    }
+  }, []);
+
+  // -------------------------------------------------------------
   // Prevent Accidental Back Navigation (Popstate Interception) & Ensure Zero Site Data Storage
   // -------------------------------------------------------------
   useEffect(() => {
