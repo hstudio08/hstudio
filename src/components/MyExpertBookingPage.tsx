@@ -47,7 +47,6 @@ const getPhoneBookingCount = async (phone: string): Promise<number> => {
 
     return matchingDocs.length;
   } catch (err) {
-    // Unauthenticated clients cannot read whole collection under Firestore Rules allow read: if isAdmin();
     console.warn("Phone booking count check skipped (requires admin read per rules):", err);
     return 0;
   }
@@ -62,7 +61,7 @@ export default function MyExpertBookingPage({ slug }: MyExpertBookingPageProps) 
   const [showPrivacyModal, setShowPrivacyModal] = useState(false);
   const [agreedToTerms, setAgreedToTerms] = useState(false);
 
-  // Stepper active step (1: Contact, 2: Email OTP, 3: Package & Coupon, 4: Summary)
+  // Stepper active step (1: Contact & Free Coupon Gate, 2: Package, Notes & Confirm)
   const [activeStep, setActiveStep] = useState<number>(1);
 
   // Package State
@@ -88,7 +87,7 @@ export default function MyExpertBookingPage({ slug }: MyExpertBookingPageProps) 
     return () => clearInterval(timer);
   }, []);
 
-  // Coupon State (TRANSIENT IN-MEMORY ONLY - NO LOCALSTORAGE / SESSIONSTORAGE / SITE DATA CACHING)
+  // Coupon State (GATING REQUIREMENT FOR STEP 1)
   const [couponCode, setCouponCode] = useState('');
   const [appliedCoupon, setAppliedCoupon] = useState<string | null>(null);
   const [couponError, setCouponError] = useState<string | null>(null);
@@ -96,25 +95,18 @@ export default function MyExpertBookingPage({ slug }: MyExpertBookingPageProps) 
   const [isCouponValidating, setIsCouponValidating] = useState(false);
   const [showConfetti, setShowConfetti] = useState(false);
 
-  // Contact Details State with strict input limits matching Firestore Rules
+  // Contact Details State (No Email Required)
   const [formData, setFormData] = useState({
     name: '',
     phone: '',
-    email: '',
     message: ''
   });
 
   // Validation Error States
   const [nameError, setNameError] = useState<string | null>(null);
   const [phoneError, setPhoneError] = useState<string | null>(null);
-  const [emailError, setEmailError] = useState<string | null>(null);
   const [messageError, setMessageError] = useState<string | null>(null);
-  const [isCheckingPhoneLimit, setIsCheckingPhoneLimit] = useState(false);
-
-  // OTP State
-  const [otpStatus, setOtpStatus] = useState<'idle' | 'sending' | 'sent' | 'verifying' | 'verified'>('idle');
-  const [otpCode, setOtpCode] = useState('');
-  const [actualOtp, setActualOtp] = useState('');
+  const [isCheckingStep1, setIsCheckingStep1] = useState(false);
 
   // Submission & Cryptographic Hash State
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -193,7 +185,7 @@ export default function MyExpertBookingPage({ slug }: MyExpertBookingPageProps) 
   };
 
   const currentBasePrice = packagePrices[selectedPackage];
-  // STRICT SERVER/COMPONENT VERIFICATION: Calculate payback ONLY if valid coupon applied
+  // Calculate payback ONLY if valid coupon applied
   const isCouponVerified = appliedCoupon ? isValidMyExpertCoupon(appliedCoupon) : false;
   const paybackInfo = calculateMyExpertPayback(currentBasePrice, isCouponVerified ? MYEXPERT_PAYBACK_PERCENTAGE : 0);
 
@@ -215,22 +207,13 @@ export default function MyExpertBookingPage({ slug }: MyExpertBookingPageProps) 
   const calculateProgress = () => {
     if (isSuccess) return 100;
     if (activeStep === 1) {
-      if (formData.name.trim() && formData.phone.trim()) return 25;
-      if (formData.name.trim() || formData.phone.trim()) return 10;
-      return 5;
+      if (appliedCoupon) return 50;
+      if (formData.name.trim() && formData.phone.trim()) return 30;
+      return 15;
     }
     if (activeStep === 2) {
-      if (otpStatus === 'verified') return 50;
-      if (otpStatus === 'sent' || otpStatus === 'sending') return 35;
-      return 30;
-    }
-    if (activeStep === 3) {
-      if (appliedCoupon) return 85;
-      return 70;
-    }
-    if (activeStep === 4) {
       if (agreedToTerms) return 95;
-      return 90;
+      return 80;
     }
     return 0;
   };
@@ -245,7 +228,6 @@ export default function MyExpertBookingPage({ slug }: MyExpertBookingPageProps) 
       const pathSegments = window.location.pathname.split('/').filter(Boolean);
       const lastSegment = pathSegments[pathSegments.length - 1] || '';
 
-      // Check if last segment is already a random token starting with qx-
       if (!lastSegment.startsWith('qx-') || lastSegment.length < 8) {
         const randomToken = 'qx-' + Math.random().toString(36).substring(2, 10).toUpperCase();
         const newPath = `/collab/myexpert/web-booking/${randomToken}`;
@@ -272,44 +254,28 @@ export default function MyExpertBookingPage({ slug }: MyExpertBookingPageProps) 
     };
   }, []);
 
-  // Auto-verify OTP when 6 digits entered
-  useEffect(() => {
-    if (otpCode.length === 6 && otpStatus === 'sent') {
-      setOtpStatus('verifying');
-      setTimeout(() => {
-        if (otpCode === actualOtp) {
-          setOtpStatus('verified');
-        } else {
-          alert('Invalid OTP code. Please check your email.');
-          setOtpStatus('sent');
-          setOtpCode('');
-        }
-      }, 350);
-    }
-  }, [otpCode, otpStatus, actualOtp]);
-
   // -------------------------------------------------------------
-  // Instant Downloadable Booking Summary Screenshot Generator with Hash
+  // Instant Downloadable Booking Summary Screenshot Generator
   // -------------------------------------------------------------
   const downloadBookingSummaryImage = (hashVal?: string) => {
     const activeHash = hashVal || verificationHash || 'QX-ME-VERIFIED-AUTH';
     const canvas = document.createElement('canvas');
     canvas.width = 650;
-    canvas.height = 820;
+    canvas.height = 780;
     const ctx = canvas.getContext('2d');
     if (!ctx) return;
 
     // Background gradient
-    const bgGrad = ctx.createLinearGradient(0, 0, 0, 820);
+    const bgGrad = ctx.createLinearGradient(0, 0, 0, 780);
     bgGrad.addColorStop(0, '#FFFFFF');
     bgGrad.addColorStop(1, '#F8FAFC');
     ctx.fillStyle = bgGrad;
-    ctx.fillRect(0, 0, 650, 820);
+    ctx.fillRect(0, 0, 650, 780);
 
     // Outer border
     ctx.strokeStyle = '#1B4D3E';
     ctx.lineWidth = 8;
-    ctx.strokeRect(4, 4, 642, 812);
+    ctx.strokeRect(4, 4, 642, 772);
 
     // Header banner
     ctx.fillStyle = '#1B4D3E';
@@ -346,44 +312,43 @@ export default function MyExpertBookingPage({ slug }: MyExpertBookingPageProps) 
     };
 
     drawRow('Customer Name:', formData.name, 205);
-    drawRow('Phone Number:', formData.phone, 245);
-    drawRow('Verified Email:', formData.email, 285);
-    drawRow('Selected Package:', `${selectedPackage} Package`, 325);
-    drawRow('Original Base Price:', `₹${currentBasePrice.toLocaleString('en-IN')}`, 365);
+    drawRow('Phone Number:', formData.phone, 250);
+    drawRow('Selected Package:', `${selectedPackage} Package`, 295);
+    drawRow('Original Base Price:', `₹${currentBasePrice.toLocaleString('en-IN')}`, 340);
 
     if (isCouponVerified && appliedCoupon) {
-      drawRow('Coupon Code:', appliedCoupon, 405, true);
-      drawRow('MyExpert Payback (30%):', `- ₹${paybackInfo.paybackAmount.toLocaleString('en-IN')}`, 445, false, true);
-      drawRow('Final Net Outlay:', `₹${paybackInfo.netPrice.toLocaleString('en-IN')}`, 495, true, true);
+      drawRow('Coupon Code:', appliedCoupon, 385, true);
+      drawRow('MyExpert Payback (30%):', `- ₹${paybackInfo.paybackAmount.toLocaleString('en-IN')}`, 430, false, true);
+      drawRow('Final Net Outlay:', `₹${paybackInfo.netPrice.toLocaleString('en-IN')}`, 480, true, true);
     } else {
-      drawRow('Coupon Status:', 'No Coupon Applied', 405);
-      drawRow('Final Net Outlay:', `₹${currentBasePrice.toLocaleString('en-IN')}`, 465, true);
+      drawRow('Coupon Status:', 'No Coupon Applied', 385);
+      drawRow('Final Net Outlay:', `₹${currentBasePrice.toLocaleString('en-IN')}`, 440, true);
     }
 
     // Terms notice box
     ctx.fillStyle = '#F1F5F9';
-    ctx.fillRect(30, 540, 590, 160);
+    ctx.fillRect(30, 520, 590, 160);
     ctx.strokeStyle = '#CBD5E1';
     ctx.lineWidth = 1;
-    ctx.strokeRect(30, 540, 590, 160);
+    ctx.strokeRect(30, 520, 590, 160);
 
     ctx.fillStyle = '#334155';
     ctx.font = '12px sans-serif';
-    ctx.fillText('OFFICIAL COLLABORATION DISCLAIMER & TERMS:', 45, 568);
-    ctx.fillText('• 30% payback discount is valid ONLY if client proceeds immediately with onboarding.', 45, 595);
-    ctx.fillText('• Delays (asking for next week/month) will result in immediate coupon revocation.', 45, 620);
-    ctx.fillText('• Qurevo Technologies & MyExpert reserve full authority to approve/reject bookings.', 45, 645);
-    ctx.fillText('• Clients may be required to pay an advance deposit to initiate engineering.', 45, 670);
+    ctx.fillText('OFFICIAL COLLABORATION DISCLAIMER & TERMS:', 45, 548);
+    ctx.fillText('• 30% payback discount is valid ONLY if client proceeds immediately with onboarding.', 45, 575);
+    ctx.fillText('• Delays (asking for next week/month) will result in immediate coupon revocation.', 45, 600);
+    ctx.fillText('• Qurevo Technologies & MyExpert reserve full authority to approve/reject bookings.', 45, 625);
+    ctx.fillText('• Clients may be required to pay an advance deposit to initiate engineering.', 45, 650);
 
     // Footer
     ctx.fillStyle = '#94A3B8';
     ctx.font = '12px sans-serif';
-    ctx.fillText(`Generated automatically on ${new Date().toLocaleString()} | Qurevo × MyExpert`, 30, 770);
+    ctx.fillText(`Generated automatically on ${new Date().toLocaleString()} | Qurevo × MyExpert`, 30, 735);
 
-    // INVISIBLE STEGANOGRAPHIC HASH ENCODING (Embedded invisibly in image data, zero visible text to client)
+    // INVISIBLE STEGANOGRAPHIC HASH ENCODING
     ctx.fillStyle = 'rgba(27, 77, 62, 0.003)';
     ctx.font = '1px monospace';
-    ctx.fillText(`STEGANO_HASH:${activeHash}`, 2, 818);
+    ctx.fillText(`STEGANO_HASH:${activeHash}`, 2, 778);
 
     // Download trigger
     const imageURI = canvas.toDataURL('image/png');
@@ -464,11 +429,56 @@ export default function MyExpertBookingPage({ slug }: MyExpertBookingPageProps) 
   };
 
   // -------------------------------------------------------------
-  // Step 1 Validation & Phone Booking Count Limit Check (Max 3 per phone)
+  // Single-Use Strict Coupon Verification Function (Free Coupon Check)
+  // -------------------------------------------------------------
+  const verifyAndApplyCoupon = async (codeToVerify: string): Promise<boolean> => {
+    setCouponError(null);
+    setCouponSuccessMsg(null);
+
+    const trimmed = codeToVerify.trim().toUpperCase().replace(/[^A-Z0-9]/g, '');
+    if (!trimmed) {
+      setCouponError('Please enter your valid MyExpert coupon code to proceed.');
+      return false;
+    }
+    if (trimmed.length > 15) {
+      setCouponError('Coupon code cannot exceed 15 characters.');
+      return false;
+    }
+
+    setIsCouponValidating(true);
+
+    // 1. Must be a valid MyExpert Coupon
+    if (!isValidMyExpertCoupon(trimmed)) {
+      setIsCouponValidating(false);
+      setAppliedCoupon(null);
+      setCouponError('Invalid coupon code. Only clients with a valid MyExpert coupon can proceed.');
+      return false;
+    }
+
+    // 2. Must be a FREE coupon (NOT claimed on an active booking)
+    const alreadyClaimed = await isCouponAlreadyClaimed(trimmed);
+    setIsCouponValidating(false);
+
+    if (alreadyClaimed) {
+      setAppliedCoupon(null);
+      setCouponError(`Coupon code ${trimmed} is currently locked on an active booking. Only clients with a FREE coupon can proceed.`);
+      return false;
+    }
+
+    setAppliedCoupon(trimmed);
+    setCouponSuccessMsg(`🎉 Valid Free Coupon (${trimmed}) Verified! 30% Payback Unlocked.`);
+    setCouponError(null);
+    fireConfetti();
+    return true;
+  };
+
+  // -------------------------------------------------------------
+  // Step 1 Validation & Gating (Name + Phone + FREE Valid Coupon required)
   // -------------------------------------------------------------
   const handleProceedFromStep1 = async () => {
     setNameError(null);
     setPhoneError(null);
+    setCouponError(null);
 
     const cleanName = sanitizeInputString(formData.name);
     const cleanPhone = formData.phone.trim();
@@ -500,61 +510,29 @@ export default function MyExpertBookingPage({ slug }: MyExpertBookingPageProps) 
       return;
     }
 
-    // RATE LIMIT CHECK: Max 3 bookings per phone number
-    setIsCheckingPhoneLimit(true);
-    const bookingCount = await getPhoneBookingCount(cleanPhone);
-    setIsCheckingPhoneLimit(false);
+    setIsCheckingStep1(true);
 
+    // 1. Phone Rate Limit Check (Max 3 active bookings per phone)
+    const bookingCount = await getPhoneBookingCount(cleanPhone);
     if (bookingCount >= 3) {
+      setIsCheckingStep1(false);
       setPhoneError(`Maximum booking limit reached! Phone number (${cleanPhone}) has already registered ${bookingCount} active bookings (Max 3 allowed).`);
       return;
     }
 
-    // Advance to Step 2
+    // 2. GATING REQUIREMENT: Must have a FREE Valid MyExpert Coupon Code verified!
+    const isCouponOk = appliedCoupon
+      ? true
+      : await verifyAndApplyCoupon(couponCode);
+
+    setIsCheckingStep1(false);
+
+    if (!isCouponOk) {
+      return;
+    }
+
+    // Advance to Step 2 (Package, Notes & Confirm)
     setActiveStep(2);
-  };
-
-  // -------------------------------------------------------------
-  // Single-Use Strict Coupon Validation with Real-Time Active Firestore Check
-  // -------------------------------------------------------------
-  const handleApplyCoupon = async (e?: React.FormEvent) => {
-    if (e) e.preventDefault();
-    setCouponError(null);
-    setCouponSuccessMsg(null);
-
-    const trimmed = couponCode.trim().toUpperCase().replace(/[^A-Z0-9]/g, '');
-    if (!trimmed) {
-      setCouponError('Please enter your coupon code.');
-      return;
-    }
-    if (trimmed.length > 15) {
-      setCouponError('Coupon code cannot exceed 15 characters.');
-      return;
-    }
-
-    setIsCouponValidating(true);
-
-    if (!isValidMyExpertCoupon(trimmed)) {
-      setIsCouponValidating(false);
-      setAppliedCoupon(null);
-      setCouponError('Invalid coupon code. 30% payback requires an exact valid MyExpert coupon.');
-      return;
-    }
-
-    // Check single-use active status in Firestore (status !== 'rejected')
-    const alreadyClaimed = await isCouponAlreadyClaimed(trimmed);
-    setIsCouponValidating(false);
-
-    if (alreadyClaimed) {
-      setAppliedCoupon(null);
-      setCouponError(`Coupon code ${trimmed} is already claimed on an active booking. If a booking is rejected by admin, the coupon becomes available again.`);
-      return;
-    }
-
-    setAppliedCoupon(trimmed);
-    setCouponSuccessMsg(`🎉 30% Payback coupon (${trimmed}) applied! Saved ₹${((currentBasePrice * 30) / 100).toLocaleString('en-IN')}`);
-    setCouponError(null);
-    fireConfetti();
   };
 
   const handleRemoveCoupon = () => {
@@ -565,52 +543,7 @@ export default function MyExpertBookingPage({ slug }: MyExpertBookingPageProps) 
   };
 
   // -------------------------------------------------------------
-  // OTP Send Handler with Strict Email Validation
-  // -------------------------------------------------------------
-  const handleSendOTP = async (e: React.MouseEvent) => {
-    e.preventDefault();
-    setEmailError(null);
-
-    const cleanEmail = formData.email.trim();
-    if (!cleanEmail) {
-      setEmailError('Please enter your email address first.');
-      return;
-    }
-    if (cleanEmail.length > 80) {
-      setEmailError('Email address cannot exceed 80 characters.');
-      return;
-    }
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(cleanEmail)) {
-      setEmailError('Please enter a valid email address (e.g. name@domain.com).');
-      return;
-    }
-
-    setOtpStatus('sending');
-    const generatedOTP = Math.floor(100000 + Math.random() * 900000).toString();
-    setActualOtp(generatedOTP);
-
-    try {
-      await emailjs.send(
-        process.env.NEXT_PUBLIC_EMAILJS_SERVICE_ID || '',
-        process.env.NEXT_PUBLIC_EMAILJS_TEMPLATE_ID || '',
-        {
-          to_email: cleanEmail,
-          passcode: generatedOTP,
-          time: new Date(Date.now() + 15 * 60000).toLocaleTimeString()
-        },
-        process.env.NEXT_PUBLIC_EMAILJS_PUBLIC_KEY || ''
-      );
-      setTimeout(() => setOtpStatus('sent'), 300);
-    } catch (err) {
-      console.error('OTP Send Error:', err);
-      alert('Could not send OTP email. Please check your email address.');
-      setOtpStatus('idle');
-    }
-  };
-
-  // -------------------------------------------------------------
-  // Final Submission Handler — COMPLIES 100% WITH FIRESTORE SECURITY RULES
+  // Final Submission Handler
   // -------------------------------------------------------------
   const handleSubmitBooking = async () => {
     if (!agreedToTerms) {
@@ -622,31 +555,48 @@ export default function MyExpertBookingPage({ slug }: MyExpertBookingPageProps) 
 
     const cleanName = sanitizeInputString(formData.name);
     const cleanPhone = formData.phone.trim();
-    const cleanEmail = formData.email.trim();
-    // Enforce message length MAX 250 characters strictly to comply with Firestore rule: isValidString(message, 0, 250)
     const rawMessage = sanitizeInputString(formData.message) || 'No additional notes';
     const cleanMessage = rawMessage.substring(0, 250);
+
+    // Final Rate Limit Check: Max 3 bookings per phone
+    const bookingCount = await getPhoneBookingCount(cleanPhone);
+    if (bookingCount >= 3) {
+      setIsSubmitting(false);
+      alert(`Maximum booking limit reached! Phone number (${cleanPhone}) has already registered ${bookingCount} active bookings (Max 3 allowed).`);
+      return;
+    }
+
+    // Re-verify single use right before submission
+    if (appliedCoupon) {
+      const alreadyClaimed = await isCouponAlreadyClaimed(appliedCoupon);
+      if (alreadyClaimed) {
+        setIsSubmitting(false);
+        alert(`Coupon ${appliedCoupon} was claimed just now by another booking. Please request a new FREE coupon code.`);
+        setAppliedCoupon(null);
+        setActiveStep(1);
+        return;
+      }
+    } else {
+      setIsSubmitting(false);
+      alert('A valid free MyExpert coupon code is required to book.');
+      setActiveStep(1);
+      return;
+    }
 
     // Generate Cryptographic Verification Hash
     const generatedHash = await generateVerificationHash(cleanName, cleanPhone);
     setVerificationHash(generatedHash);
 
-    // Strict validation: Only log 30% payback if coupon is verified
-    const finalCouponApplied = isCouponVerified ? appliedCoupon : null;
-    const finalPaybackAmount = isCouponVerified ? paybackInfo.paybackAmount : 0;
-    const finalNetPrice = isCouponVerified ? paybackInfo.netPrice : currentBasePrice;
+    const finalCouponApplied = appliedCoupon;
+    const finalPaybackAmount = paybackInfo.paybackAmount;
+    const finalNetPrice = paybackInfo.netPrice;
 
-    // PAYLOAD COMPLIANCE WITH FIRESTORE RULES:
-    // 1. status MUST be strictly "new"
-    // 2. keys hasAll: ['name', 'phone', 'email', 'packageType', 'message', 'status', 'timestamp']
-    // 3. isValidString(name, 1, 100) -> PASSES
-    // 4. isValidString(phone, 7, 20) -> PASSES
-    // 5. isValidString(message, 0, 250) -> PASSES (truncated to <= 250)
-    // 6. timestamp MUST be serverTimestamp() -> PASSES
+    // FIRESTORE PAYLOAD COMPLIANCE:
+    // email field is set to "N/A" to satisfy Firestore rule: keys().hasAll(['name', 'phone', 'email', ...])
     const bookingPayload = {
       name: cleanName,
       phone: cleanPhone,
-      email: cleanEmail,
+      email: 'N/A',
       packageType: `${selectedPackage} Package — ₹${currentBasePrice.toLocaleString('en-IN')}`,
       message: cleanMessage,
       status: 'new',
@@ -655,9 +605,9 @@ export default function MyExpertBookingPage({ slug }: MyExpertBookingPageProps) 
       // Additional Metadata Fields
       collaborator: 'MyExpert',
       slug,
-      couponCode: finalCouponApplied || 'None',
-      isCouponApplied: !!finalCouponApplied,
-      paybackPercentage: finalCouponApplied ? MYEXPERT_PAYBACK_PERCENTAGE : 0,
+      couponCode: finalCouponApplied,
+      isCouponApplied: true,
+      paybackPercentage: MYEXPERT_PAYBACK_PERCENTAGE,
       paybackAmount: finalPaybackAmount,
       originalPrice: currentBasePrice,
       netPrice: finalNetPrice,
@@ -675,7 +625,6 @@ export default function MyExpertBookingPage({ slug }: MyExpertBookingPageProps) 
       console.error('Firestore Database Save Error:', err);
     }
 
-    // STRICT REQUIREMENT: Booking MUST reach Firestore Database to be confirmed!
     if (!firebaseOk) {
       setIsSubmitting(false);
       alert('Error saving booking to Firestore database. Please check that all fields comply with valid parameters.');
@@ -683,8 +632,7 @@ export default function MyExpertBookingPage({ slug }: MyExpertBookingPageProps) 
     }
 
     // Send Admin Notification Email via EmailJS
-    const emailMessageBody = finalCouponApplied
-      ? `================================================
+    const emailMessageBody = `================================================
 🏷️ MYEXPERT 30% PAYBACK COUPON APPLIED
 ================================================
 Collaborator: MyExpert Partner Portal
@@ -695,24 +643,13 @@ Original Base Price: ₹${currentBasePrice.toLocaleString('en-IN')}
 Payback Discount (30%): -₹${finalPaybackAmount.toLocaleString('en-IN')}
 Net Outlay Payable: ₹${finalNetPrice.toLocaleString('en-IN')}
 
+Client Name: ${cleanName}
+Client Phone: ${cleanPhone}
 Client Notes: ${cleanMessage}
 Terms & Conditions Agreed: YES
-(Client agrees to immediate onboarding call & potential advance payment rule)`
-      : `================================================
-STANDARD BOOKING (NO COUPON)
-================================================
-Collaborator: MyExpert Portal
-Verification Hash: ${generatedHash}
+(Client agrees to immediate onboarding call & potential advance payment rule)`;
 
-Original Base Price: ₹${currentBasePrice.toLocaleString('en-IN')}
-Net Payable Amount: ₹${currentBasePrice.toLocaleString('en-IN')}
-
-Client Notes: ${cleanMessage}
-Terms & Conditions Agreed: YES`;
-
-    const packageTag = finalCouponApplied
-      ? `${selectedPackage} Package (🏷️ 30% PAYBACK - Code: ${finalCouponApplied})`
-      : `${selectedPackage} Package — ₹${currentBasePrice.toLocaleString('en-IN')}`;
+    const packageTag = `${selectedPackage} Package (🏷️ 30% PAYBACK - Code: ${finalCouponApplied})`;
 
     try {
       await emailjs.send(
@@ -721,7 +658,7 @@ Terms & Conditions Agreed: YES`;
         {
           to_email: 'qurevotechnologies@gmail.com',
           from_name: `${cleanName} (MyExpert Collab)`,
-          reply_to: cleanEmail,
+          reply_to: 'qurevotechnologies@gmail.com',
           phone: cleanPhone,
           package: packageTag,
           message: emailMessageBody
@@ -736,7 +673,7 @@ Terms & Conditions Agreed: YES`;
     setIsSuccess(true);
     fireConfetti();
     
-    // Instantly trigger downloadable summary image screenshot with generated hash
+    // Instantly trigger downloadable summary image screenshot
     setTimeout(() => {
       downloadBookingSummaryImage(generatedHash);
     }, 500);
@@ -755,11 +692,8 @@ Terms & Conditions Agreed: YES`;
         className={`fixed inset-0 pointer-events-none z-[9999] transition-opacity duration-300 ${showConfetti ? 'opacity-100' : 'opacity-0'}`}
       />
 
-      {/* ------------------------------------------------------------- */}
-      {/* TOPMOST 24-HOUR COUNTDOWN BANNER (EXCLUSIVE TO FIRST 5 CLIENTS) */}
-      {/* ------------------------------------------------------------- */}
+      {/* TOPMOST 24-HOUR COUNTDOWN BANNER */}
       <div className="bg-[#1B4D3E] text-white py-2.5 px-4 text-center border-b-2 border-[#D4AF37] shadow-md sticky top-0 z-50 w-full flex flex-wrap items-center justify-between sm:justify-around gap-2 text-xs font-bold">
-        
         <div className="flex items-center space-x-2">
           <span className="bg-[#D4AF37] text-slate-900 px-2.5 py-0.5 rounded-md text-[10px] font-black uppercase tracking-wider animate-pulse shadow-sm">
             🔥 LIMITED OFFER
@@ -778,11 +712,13 @@ Terms & Conditions Agreed: YES`;
           <span className="text-[#D4AF37] font-black text-sm">{String(timeLeft.seconds).padStart(2, '0')}s</span>
         </div>
 
+        <div className="flex items-center space-x-1.5 bg-[#D4AF37]/20 text-[#D4AF37] px-3 py-1 rounded-lg border border-[#D4AF37]/40 text-[11px] font-extrabold">
+          <span>⚡ 3 / 5 Spots Claimed</span>
+          <span className="text-white font-normal text-[10px] hidden sm:inline">(Only 2 Left)</span>
+        </div>
       </div>
 
-      {/* ------------------------------------------------------------- */}
-      {/* MAIN FULL-WIDTH CONTAINER */}
-      {/* ------------------------------------------------------------- */}
+      {/* MAIN CONTAINER */}
       <main className="relative w-full px-2 sm:px-4 md:px-6 lg:px-8 py-6 sm:py-10 flex-1 space-y-10 sm:space-y-14">
         
         {/* HERO SECTION */}
@@ -892,7 +828,6 @@ Terms & Conditions Agreed: YES`;
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 w-full items-stretch">
-            
             {packagesList.map((pkg) => {
               const isSelected = selectedPackage === pkg.name;
               return (
@@ -952,7 +887,6 @@ Terms & Conditions Agreed: YES`;
                 </div>
               );
             })}
-
           </div>
         </section>
 
@@ -965,7 +899,7 @@ Terms & Conditions Agreed: YES`;
                 <h2 className="font-['Bebas_Neue'] text-3xl sm:text-4xl md:text-5xl font-black text-[#1B4D3E] uppercase tracking-wider">
                   Book Website before offer ends
                 </h2>
-                <p className="text-xs text-slate-500 mt-0.5">Complete your details step-by-step.</p>
+                <p className="text-xs text-slate-500 mt-0.5">Enter details, verify free coupon, and confirm booking.</p>
               </div>
 
               {/* Dynamic Percentage Badge */}
@@ -1007,14 +941,8 @@ Terms & Conditions Agreed: YES`;
                   <div className="flex justify-between text-slate-700"><span>Customer:</span> <strong className="text-slate-900">{formData.name} ({formData.phone})</strong></div>
                   <div className="flex justify-between text-slate-700"><span>Selected Package:</span> <strong className="text-slate-900">{selectedPackage}</strong></div>
                   <div className="flex justify-between text-slate-700"><span>Original Base Price:</span> <span className="line-through">₹{currentBasePrice.toLocaleString('en-IN')}</span></div>
-                  {isCouponVerified && appliedCoupon ? (
-                    <>
-                      <div className="flex justify-between text-emerald-700 font-bold"><span>MyExpert 30% Payback ({appliedCoupon}):</span> <span>- ₹{paybackInfo.paybackAmount.toLocaleString('en-IN')}</span></div>
-                      <div className="flex justify-between text-[#1B4D3E] font-black border-t pt-2 text-sm"><span>Net Outlay:</span> <span>₹{paybackInfo.netPrice.toLocaleString('en-IN')}</span></div>
-                    </>
-                  ) : (
-                    <div className="flex justify-between text-slate-900 font-bold border-t pt-2 text-sm"><span>Total Payable:</span> <span>₹{currentBasePrice.toLocaleString('en-IN')}</span></div>
-                  )}
+                  <div className="flex justify-between text-emerald-700 font-bold"><span>MyExpert 30% Payback ({appliedCoupon}):</span> <span>- ₹{paybackInfo.paybackAmount.toLocaleString('en-IN')}</span></div>
+                  <div className="flex justify-between text-[#1B4D3E] font-black border-t pt-2 text-sm"><span>Net Outlay:</span> <span>₹{paybackInfo.netPrice.toLocaleString('en-IN')}</span></div>
                 </div>
 
                 <button
@@ -1030,12 +958,12 @@ Terms & Conditions Agreed: YES`;
             ) : (
               <div>
                 
-                {/* STEP 1: CONTACT DETAILS WITH STRICT LIMITS & RATE LIMIT CHECK */}
+                {/* STEP 1: NAME, PHONE, AND FREE COUPON GATE */}
                 {activeStep === 1 && (
                   <div className="space-y-5 animate-fade-in">
                     <div className="space-y-1">
-                      <h3 className="text-lg font-bold text-[#1B4D3E]">Contact Details</h3>
-                      <p className="text-xs text-slate-500">Enter your Full Name and Phone Number to start.</p>
+                      <h3 className="text-lg font-bold text-[#1B4D3E]">Step 1: Contact Details & Free Coupon Verification</h3>
+                      <p className="text-xs text-slate-500">Enter your Name, Phone Number, and a FREE MyExpert Coupon Code to proceed.</p>
                     </div>
 
                     <div className="space-y-4 bg-slate-50 p-5 rounded-2xl border-2 border-[#1B4D3E]">
@@ -1090,149 +1018,11 @@ Terms & Conditions Agreed: YES`;
                         {phoneError && <p className="text-xs font-bold text-red-600 mt-1">{phoneError}</p>}
                       </div>
 
-                    </div>
-
-                    <div className="flex justify-end pt-2">
-                      <button
-                        type="button"
-                        disabled={isCheckingPhoneLimit || !formData.name.trim() || !formData.phone.trim()}
-                        onClick={handleProceedFromStep1}
-                        className="px-8 py-3.5 bg-[#1B4D3E] hover:bg-[#12362b] disabled:opacity-40 text-white font-extrabold rounded-xl text-xs uppercase tracking-wider transition-all shadow-md flex items-center gap-2"
-                      >
-                        {isCheckingPhoneLimit ? (
-                          <>
-                            <span className="w-3.5 h-3.5 border-2 border-white border-t-transparent rounded-full animate-spin" />
-                            <span>Verifying Limit...</span>
-                          </>
-                        ) : (
-                          <span>Continue &rarr;</span>
-                        )}
-                      </button>
-                    </div>
-                  </div>
-                )}
-
-                {/* STEP 2: EMAIL & OTP VERIFICATION */}
-                {activeStep === 2 && (
-                  <div className="space-y-5 animate-fade-in">
-                    <div className="space-y-1">
-                      <h3 className="text-lg font-bold text-[#1B4D3E]">Email Verification</h3>
-                      <p className="text-xs text-slate-500">Enter your email address and verify via 6-digit OTP code.</p>
-                    </div>
-
-                    <div className="space-y-4 bg-slate-50 p-5 rounded-2xl border-2 border-[#1B4D3E]">
+                      {/* FREE COUPON CODE INPUT (MANDATORY GATING FIELD) */}
                       <div>
                         <div className="flex justify-between items-center mb-1.5">
-                          <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider">Email Address *</label>
-                          <span className="text-[10px] text-slate-400 font-mono">{formData.email.length}/80 chars</span>
-                        </div>
-                        <div className="flex flex-col sm:flex-row gap-2">
-                          <input
-                            type="email"
-                            maxLength={80}
-                            disabled={otpStatus === 'verified'}
-                            value={formData.email}
-                            onChange={(e) => {
-                              if (e.target.value.length <= 80) {
-                                setFormData({ ...formData, email: e.target.value });
-                                setEmailError(null);
-                              }
-                            }}
-                            placeholder="yourname@email.com"
-                            className="flex-1 bg-white border border-slate-300 rounded-xl px-4 py-3 text-sm text-slate-900 placeholder-slate-400 outline-none focus:border-[#1B4D3E] disabled:opacity-60"
-                          />
-                          
-                          {otpStatus !== 'verified' ? (
-                            <button
-                              type="button"
-                              onClick={handleSendOTP}
-                              disabled={otpStatus === 'sending' || otpStatus === 'verifying'}
-                              className="bg-[#1B4D3E] hover:bg-[#12362b] text-white font-bold text-xs px-6 py-3 rounded-xl uppercase transition-all min-w-[120px] disabled:opacity-50"
-                            >
-                              {otpStatus === 'sending' ? 'Sending...' : otpStatus === 'sent' ? 'Resend OTP' : 'Send OTP'}
-                            </button>
-                          ) : (
-                            <div className="bg-emerald-100 text-emerald-800 font-extrabold text-xs px-5 py-3 rounded-xl flex items-center justify-center border border-emerald-300">
-                              ✓ Verified
-                            </div>
-                          )}
-                        </div>
-                        {emailError && <p className="text-xs font-bold text-red-600 mt-1">{emailError}</p>}
-                      </div>
-
-                      {(otpStatus === 'sent' || otpStatus === 'verifying') && (
-                        <div className="pt-2 flex gap-2">
-                          <input
-                            type="text"
-                            maxLength={6}
-                            value={otpCode}
-                            onChange={(e) => setOtpCode(e.target.value.replace(/\D/g, '').slice(0, 6))}
-                            placeholder="6-digit OTP Code"
-                            className="flex-1 bg-white border-2 border-[#1B4D3E] rounded-xl px-4 py-2.5 text-center font-mono text-lg font-black tracking-widest text-[#1B4D3E] outline-none"
-                          />
-                          <button
-                            type="button"
-                            onClick={() => {
-                              if (otpCode === actualOtp) setOtpStatus('verified');
-                              else alert('Invalid OTP code.');
-                            }}
-                            className="bg-[#1B4D3E] text-white font-bold text-xs px-6 py-2.5 rounded-xl uppercase"
-                          >
-                            Verify
-                          </button>
-                        </div>
-                      )}
-                    </div>
-
-                    <div className="flex justify-between items-center pt-2">
-                      <button
-                        type="button"
-                        onClick={() => setActiveStep(1)}
-                        className="px-5 py-3 text-slate-600 hover:text-slate-900 font-bold text-xs uppercase tracking-wider"
-                      >
-                        &larr; Back
-                      </button>
-                      <button
-                        type="button"
-                        disabled={otpStatus !== 'verified'}
-                        onClick={() => setActiveStep(3)}
-                        className="px-8 py-3.5 bg-[#1B4D3E] hover:bg-[#12362b] disabled:opacity-40 text-white font-extrabold rounded-xl text-xs uppercase tracking-wider transition-all shadow-md"
-                      >
-                        Next &rarr;
-                      </button>
-                    </div>
-                  </div>
-                )}
-
-                {/* STEP 3: PACKAGE & COUPON SELECTION */}
-                {activeStep === 3 && (
-                  <div className="space-y-5 animate-fade-in">
-                    <div className="space-y-1">
-                      <h3 className="text-lg font-bold text-[#1B4D3E]">Package & Coupon Selection</h3>
-                      <p className="text-xs text-slate-500">Select your package and apply your MyExpert coupon code.</p>
-                    </div>
-
-                    <div className="space-y-4 bg-slate-50 p-5 rounded-2xl border-2 border-[#1B4D3E]">
-                      
-                      {/* Package Select Dropdown */}
-                      <div>
-                        <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">Select Website Package</label>
-                        <select
-                          value={selectedPackage}
-                          onChange={(e) => setSelectedPackage(e.target.value as 'Starter' | 'Growth' | 'Premium')}
-                          className="w-full bg-white border border-slate-300 rounded-xl px-4 py-3 text-sm font-semibold text-slate-900 outline-none focus:border-[#1B4D3E]"
-                        >
-                          <option value="Starter">Starter Package — ₹10,000</option>
-                          <option value="Growth">Growth Package — ₹15,000 (Most Popular)</option>
-                          <option value="Premium">Premium Package — ₹20,000</option>
-                        </select>
-                      </div>
-
-                      {/* Coupon Code Input (MAX 15 CHARS, UPPERCASE ALPHANUMERIC ONLY) */}
-                      <div>
-                        <div className="flex justify-between items-center mb-1.5">
-                          <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider">
-                            MyExpert Coupon Code (Required for 30% Payback)
+                          <label className="block text-xs font-bold text-[#1B4D3E] uppercase tracking-wider">
+                            MyExpert Coupon Code * (Free Unlocked Coupon Required)
                           </label>
                           <span className="text-[10px] text-slate-400 font-mono">{couponCode.length}/15 chars</span>
                         </div>
@@ -1250,10 +1040,11 @@ Terms & Conditions Agreed: YES`;
                                 setCouponCode(cleaned);
                                 setCouponError(null);
                                 setCouponSuccessMsg(null);
+                                setAppliedCoupon(null);
                               }
                             }}
-                            placeholder="Paste your coupon code"
-                            className="flex-1 bg-white border border-slate-300 rounded-xl px-4 py-3 text-sm font-bold text-[#1B4D3E] uppercase outline-none focus:border-[#1B4D3E]"
+                            placeholder="Paste your free coupon code"
+                            className="flex-1 bg-white border-2 border-[#1B4D3E] rounded-xl px-4 py-3 text-sm font-bold text-[#1B4D3E] uppercase outline-none focus:ring-2 focus:ring-[#D4AF37]"
                           />
                           
                           {appliedCoupon ? (
@@ -1267,11 +1058,11 @@ Terms & Conditions Agreed: YES`;
                           ) : (
                             <button
                               type="button"
-                              onClick={handleApplyCoupon}
+                              onClick={() => verifyAndApplyCoupon(couponCode)}
                               disabled={isCouponValidating || !couponCode.trim()}
-                              className="bg-[#1B4D3E] hover:bg-[#12362b] border border-[#1B4D3E] disabled:opacity-50 text-white font-bold text-xs px-6 py-3 rounded-xl uppercase transition-all min-w-[100px]"
+                              className="bg-[#1B4D3E] hover:bg-[#12362b] border border-[#1B4D3E] disabled:opacity-50 text-white font-bold text-xs px-6 py-3 rounded-xl uppercase transition-all min-w-[110px]"
                             >
-                              {isCouponValidating ? 'Checking...' : 'Apply Code'}
+                              {isCouponValidating ? 'Checking...' : 'Verify Code'}
                             </button>
                           )}
                         </div>
@@ -1289,6 +1080,58 @@ Terms & Conditions Agreed: YES`;
                         )}
                       </div>
 
+                    </div>
+
+                    <div className="flex justify-end pt-2">
+                      <button
+                        type="button"
+                        disabled={isCheckingStep1 || isCouponValidating || !formData.name.trim() || !formData.phone.trim() || !couponCode.trim()}
+                        onClick={handleProceedFromStep1}
+                        className="px-8 py-3.5 bg-[#1B4D3E] hover:bg-[#12362b] disabled:opacity-40 text-white font-extrabold rounded-xl text-xs uppercase tracking-wider transition-all shadow-md flex items-center gap-2"
+                      >
+                        {isCheckingStep1 ? (
+                          <>
+                            <span className="w-3.5 h-3.5 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                            <span>Verifying Coupon...</span>
+                          </>
+                        ) : (
+                          <span>Next (Select Package & Confirm) &rarr;</span>
+                        )}
+                      </button>
+                    </div>
+                  </div>
+                )}
+
+                {/* STEP 2: PACKAGE SELECTION, PROJECT DETAILS, TERMS & COMPLETE BOOKING */}
+                {activeStep === 2 && (
+                  <div className="space-y-5 animate-fade-in">
+                    <div className="space-y-1">
+                      <h3 className="text-lg font-bold text-[#1B4D3E]">Step 2: Package Selection & Final Booking</h3>
+                      <p className="text-xs text-slate-500">Choose your website package, review payback pricing, and confirm booking.</p>
+                    </div>
+
+                    <div className="space-y-4 bg-slate-50 p-5 sm:p-6 rounded-2xl border-2 border-[#1B4D3E]">
+                      
+                      {/* Verified Coupon Tag */}
+                      <div className="bg-emerald-50 border border-emerald-300 p-3 rounded-xl flex items-center justify-between text-xs text-emerald-900 font-bold">
+                        <span>🏷️ Verified Free Coupon: <strong className="font-mono font-black">{appliedCoupon}</strong></span>
+                        <span className="bg-[#1B4D3E] text-[#D4AF37] px-2.5 py-0.5 rounded text-[10px] font-black uppercase">30% Payback Unlocked</span>
+                      </div>
+
+                      {/* Package Select Dropdown */}
+                      <div>
+                        <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">Select Website Package</label>
+                        <select
+                          value={selectedPackage}
+                          onChange={(e) => setSelectedPackage(e.target.value as 'Starter' | 'Growth' | 'Premium')}
+                          className="w-full bg-white border border-slate-300 rounded-xl px-4 py-3 text-sm font-semibold text-slate-900 outline-none focus:border-[#1B4D3E]"
+                        >
+                          <option value="Starter">Starter Package — ₹10,000</option>
+                          <option value="Growth">Growth Package — ₹15,000 (Most Popular)</option>
+                          <option value="Premium">Premium Package — ₹20,000</option>
+                        </select>
+                      </div>
+
                       {/* Project Notes (MAX 250 CHARS STRICT TO MATCH FIRESTORE RULES) */}
                       <div>
                         <div className="flex justify-between items-center mb-1.5">
@@ -1300,7 +1143,7 @@ Terms & Conditions Agreed: YES`;
                           </span>
                         </div>
                         <textarea
-                          rows={2}
+                          rows={3}
                           maxLength={250}
                           value={formData.message}
                           onChange={(e) => {
@@ -1310,44 +1153,13 @@ Terms & Conditions Agreed: YES`;
                               setMessageError(null);
                             }
                           }}
-                          placeholder="Any specific features or preferences (max 250 characters)..."
+                          placeholder="Any specific features or preferences (optional)..."
                           className="w-full bg-white border border-slate-300 rounded-xl p-3 text-xs text-slate-900 placeholder-slate-400 outline-none focus:border-[#1B4D3E]"
                         />
                         {messageError && <p className="text-xs font-bold text-red-600 mt-1">{messageError}</p>}
                       </div>
 
-                    </div>
-
-                    <div className="flex justify-between items-center pt-2">
-                      <button
-                        type="button"
-                        onClick={() => setActiveStep(2)}
-                        className="px-5 py-3 text-slate-600 hover:text-slate-900 font-bold text-xs uppercase tracking-wider"
-                      >
-                        &larr; Back
-                      </button>
-                      <button
-                        type="button"
-                        onClick={() => setActiveStep(4)}
-                        className="px-8 py-3.5 bg-[#1B4D3E] hover:bg-[#12362b] text-white font-extrabold rounded-xl text-xs uppercase tracking-wider transition-all shadow-md"
-                      >
-                        Next &rarr;
-                      </button>
-                    </div>
-                  </div>
-                )}
-
-                {/* STEP 4: REVIEW, TERMS CHECKBOX & CONFIRM */}
-                {activeStep === 4 && (
-                  <div className="space-y-5 animate-fade-in">
-                    <div className="space-y-1">
-                      <h3 className="text-lg font-bold text-[#1B4D3E]">Summary & Instant Confirmation</h3>
-                      <p className="text-xs text-slate-500">Review your details, accept collaboration terms, and complete your booking.</p>
-                    </div>
-
-                    <div className="bg-slate-50 p-6 rounded-2xl border-2 border-[#1B4D3E] space-y-4">
-                      
-                      <div className="space-y-2 border-b border-slate-200 pb-4 text-xs">
+                      <div className="space-y-2 border-t border-slate-200 pt-4 text-xs">
                         <div className="flex justify-between text-slate-600">
                           <span>Customer Name:</span>
                           <strong className="text-slate-900">{formData.name}</strong>
@@ -1355,10 +1167,6 @@ Terms & Conditions Agreed: YES`;
                         <div className="flex justify-between text-slate-600">
                           <span>Phone Number:</span>
                           <strong className="text-slate-900">{formData.phone}</strong>
-                        </div>
-                        <div className="flex justify-between text-slate-600">
-                          <span>Verified Email:</span>
-                          <strong className="text-emerald-700">{formData.email}</strong>
                         </div>
                         <div className="flex justify-between text-slate-600">
                           <span>Selected Package:</span>
@@ -1373,16 +1181,10 @@ Terms & Conditions Agreed: YES`;
                           <span className="font-bold text-slate-900">₹{currentBasePrice.toLocaleString('en-IN')}</span>
                         </div>
 
-                        {isCouponVerified && appliedCoupon ? (
-                          <div className="flex justify-between text-emerald-700 font-bold">
-                            <span>MyExpert 30% Payback ({appliedCoupon}):</span>
-                            <span>- ₹{paybackInfo.paybackAmount.toLocaleString('en-IN')}</span>
-                          </div>
-                        ) : (
-                          <div className="text-[11px] text-slate-500 italic">
-                            💡 No valid coupon applied. Original full price applies.
-                          </div>
-                        )}
+                        <div className="flex justify-between text-emerald-700 font-bold">
+                          <span>MyExpert 30% Payback ({appliedCoupon}):</span>
+                          <span>- ₹{paybackInfo.paybackAmount.toLocaleString('en-IN')}</span>
+                        </div>
 
                         <div className="pt-3 border-t border-slate-200 flex justify-between items-baseline">
                           <span className="font-extrabold text-sm text-slate-900">Final Net Outlay:</span>
@@ -1428,7 +1230,7 @@ Terms & Conditions Agreed: YES`;
                     <div className="flex justify-between items-center pt-2">
                       <button
                         type="button"
-                        onClick={() => setActiveStep(3)}
+                        onClick={() => setActiveStep(1)}
                         className="px-5 py-3 text-slate-600 hover:text-slate-900 font-bold text-xs uppercase tracking-wider"
                       >
                         &larr; Back
@@ -1475,9 +1277,7 @@ Terms & Conditions Agreed: YES`;
 
       </main>
 
-      {/* ------------------------------------------------------------- */}
       {/* FULL LEGAL MODAL: TERMS & CONDITIONS */}
-      {/* ------------------------------------------------------------- */}
       {showTermsModal && (
         <div className="fixed inset-0 z-[10000] flex items-center justify-center p-4 bg-slate-900/70 backdrop-blur-sm animate-fade-in select-none" style={{ userSelect: 'none', WebkitUserSelect: 'none' }}>
           <div className="bg-white rounded-3xl p-6 sm:p-8 max-w-2xl w-full max-h-[85vh] flex flex-col justify-between shadow-2xl border-2 border-[#1B4D3E]">
@@ -1523,9 +1323,7 @@ Terms & Conditions Agreed: YES`;
         </div>
       )}
 
-      {/* ------------------------------------------------------------- */}
       {/* FULL LEGAL MODAL: PRIVACY POLICY */}
-      {/* ------------------------------------------------------------- */}
       {showPrivacyModal && (
         <div className="fixed inset-0 z-[10000] flex items-center justify-center p-4 bg-slate-900/70 backdrop-blur-sm animate-fade-in select-none" style={{ userSelect: 'none', WebkitUserSelect: 'none' }}>
           <div className="bg-white rounded-3xl p-6 sm:p-8 max-w-2xl w-full max-h-[85vh] flex flex-col justify-between shadow-2xl border-2 border-[#1B4D3E]">
@@ -1543,7 +1341,7 @@ Terms & Conditions Agreed: YES`;
 
             <div className="overflow-y-auto py-4 text-[11px] text-slate-700 leading-relaxed space-y-3 font-mono border-b border-slate-100 my-2 pr-2">
               <h4 className="font-bold text-slate-900 uppercase">Information Handling & Data Protection Notice</h4>
-              <p><strong>1. Data Sharing Protocol:</strong> All personal data provided during the booking process (including Full Name, Telephone Number, Verified Email Address, and Project Requirements) may be securely shared between Qurevo Technologies and MyExpert.</p>
+              <p><strong>1. Data Sharing Protocol:</strong> All personal data provided during the booking process (including Full Name and Telephone Number) may be securely shared between Qurevo Technologies and MyExpert.</p>
               <p><strong>2. Purpose of Data Usage:</strong> Collected information will be used strictly for partner offer eligibility verification, onboarding phone calls, project execution, and ongoing website development support.</p>
               <p><strong>3. Data Security:</strong> Qurevo Technologies utilizes encrypted communication protocols (TLS/SSL) and secure cloud infrastructure. Your personal data is protected against unauthorized access and will never be sold to third parties.</p>
               <p><strong>4. Communication Consent:</strong> By submitting your booking, you explicitly consent to receiving onboarding calls, messages, and project updates from Qurevo Technologies and MyExpert.</p>
@@ -1561,9 +1359,7 @@ Terms & Conditions Agreed: YES`;
         </div>
       )}
 
-      {/* ------------------------------------------------------------- */}
-      {/* STRICT EXIT MODAL (NO LINKS BACK TO QUREVO HOME) */}
-      {/* ------------------------------------------------------------- */}
+      {/* STRICT EXIT MODAL */}
       {showExitModal && (
         <div className="fixed inset-0 z-[10000] flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm animate-fade-in">
           <div className="bg-white rounded-3xl p-6 sm:p-8 max-w-sm w-full space-y-4 text-center shadow-2xl border-2 border-[#1B4D3E]">
