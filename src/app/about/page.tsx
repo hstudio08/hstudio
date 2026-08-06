@@ -30,6 +30,13 @@ export default function AboutPage() {
       text: "A shining digital presence for Kupwara's most loved hotel, showcasing their exquisite hospitality and vintage charm.", 
       image: "https://res.cloudinary.com/dpqsadqxj/image/upload/q_auto/f_auto/v1780714607/photo_6_2026-06-04_17-54-19_p4bdcc_oywtg6.webp",
       link: "https://vintagehousekupwara.com"
+    },
+    { 
+      title: "Rahil Yousuf", 
+      tag: "Author Portfolio", 
+      text: "A serene digital platform for an author to publish and present poetic works, quotes, and creative writings.", 
+      image: "https://res.cloudinary.com/dpqsadqxj/image/upload/v1785995861/c6b67382-3415-4814-8d86-bb4512ccaf0d.png",
+      link: "https://rahilyousuf.vercel.app"
     }
   ];
 
@@ -303,7 +310,7 @@ export default function AboutPage() {
             </div>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 md:gap-8">
             {showcase.map((project, index) => (
               <div 
                 key={index} 

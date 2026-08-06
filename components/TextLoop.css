@@ -1,0 +1,40 @@
+.text-loop {
+  position: relative;
+  width: 100%;
+  overflow: hidden;
+}
+
+.text-loop-svg {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+.text-loop-text {
+  user-select: none;
+}
+
+.text-loop-measure {
+  visibility: hidden;
+  pointer-events: none;
+}
+
+@keyframes text-loop-marquee-left {
+  0% {
+    transform: translate3d(0, 0, 0);
+  }
+  100% {
+    transform: translate3d(-50%, 0, 0);
+  }
+}
+
+.animate-text-loop-marquee {
+  display: flex;
+  width: max-content;
+  animation: text-loop-marquee-left 35s linear infinite;
+  will-change: transform;
+}
+
+.animate-text-loop-marquee:hover {
+  animation-play-state: paused;
+}

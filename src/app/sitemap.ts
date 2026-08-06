@@ -41,6 +41,12 @@ export default function sitemap(): MetadataRoute.Sitemap {
       lastModified: new Date(),
       changeFrequency: 'yearly',
       priority: 0.4,
+    },
+    {
+      url: `${baseUrl}/reviews/client-testimonials`,
+      lastModified: new Date(),
+      changeFrequency: 'weekly',
+      priority: 0.8,
     }
     // Note: We intentionally exclude the /admin route from the sitemap
     // so search engines do not attempt to index your secure backend.
