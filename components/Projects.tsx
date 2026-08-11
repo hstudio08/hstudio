@@ -280,7 +280,7 @@ export default function Projects() {
 
             </div>
 
-            <div className="relative mt-10 md:mt-16 rounded-[2rem] overflow-hidden border border-white/20 shadow-[0_8px_32px_rgba(0,0,0,0.1)]">
+            <div className="relative mt-10 md:mt-16 rounded-[2rem] overflow-hidden shadow-[0_8px_32px_rgba(0,0,0,0.1)]">
               {/* Optimized Background Image */}
               <div className="absolute inset-0 pointer-events-none z-0">
                 <Image
@@ -294,24 +294,26 @@ export default function Projects() {
                 />
               </div>
 
-              {/* Grid with glass-card elements */}
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-4 sm:gap-6 p-6 sm:p-8 md:p-12 text-center relative z-10">
-                {[
-                  { val: 25, label: "Happy Clients", suffix: "+" },
-                  { val: 30, label: "Projects Done", suffix: "+" },
-                  { val: 100, label: "Satisfaction", suffix: "%" },
-                  { val: 2, label: "Years Experience", suffix: "+" }
-                ].map((metric, i) => (
-                  <div 
-                    key={i} 
-                    className="glass-card flex flex-col items-center justify-center p-6 sm:p-8 md:p-10 transition-transform duration-500 hover:-translate-y-1 md:hover:-translate-y-2 group cursor-default"
-                  >
-                    <span className="text-4xl sm:text-5xl md:text-6xl font-black text-transparent bg-clip-text bg-gradient-to-br from-white to-white/70 group-hover:to-white transition-all duration-500 drop-shadow-md" aria-label={`${metric.val}${metric.suffix}`}>
-                      <AnimatedCounter end={metric.val} suffix={metric.suffix} />
-                    </span>
-                    <span className="text-xs md:text-sm text-white/90 font-bold uppercase tracking-wider mt-2 md:mt-3 font-['Familjen_Grotesk'] group-hover:text-white transition-colors duration-500 drop-shadow-sm text-center">{metric.label}</span>
-                  </div>
-                ))}
+              {/* The Whole Strap Glassmorphism Panel */}
+              <div className="glass-card relative z-10 w-full h-full border-none">
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-4 sm:gap-6 p-6 sm:p-8 md:p-12 text-center">
+                  {[
+                    { val: 25, label: "Happy Clients", suffix: "+" },
+                    { val: 30, label: "Projects Done", suffix: "+" },
+                    { val: 100, label: "Satisfaction", suffix: "%" },
+                    { val: 2, label: "Years Experience", suffix: "+" }
+                  ].map((metric, i) => (
+                    <div 
+                      key={i} 
+                      className="flex flex-col items-center justify-center p-4 transition-transform duration-500 hover:-translate-y-1 md:hover:-translate-y-2 group cursor-default"
+                    >
+                      <span className="text-4xl sm:text-5xl md:text-6xl font-black text-transparent bg-clip-text bg-gradient-to-br from-[#0b1c30] to-[#0058bc] group-hover:to-[#0b1c30] transition-all duration-500 drop-shadow-sm" aria-label={`${metric.val}${metric.suffix}`}>
+                        <AnimatedCounter end={metric.val} suffix={metric.suffix} />
+                      </span>
+                      <span className="text-xs md:text-sm text-[#0b1c30] font-bold uppercase tracking-wider mt-2 md:mt-3 font-['Familjen_Grotesk'] group-hover:text-[#0058bc] transition-colors duration-500 drop-shadow-sm text-center">{metric.label}</span>
+                    </div>
+                  ))}
+                </div>
               </div>
             </div>
 
