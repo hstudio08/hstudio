@@ -280,25 +280,39 @@ export default function Projects() {
 
             </div>
 
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-6 mt-10 md:mt-16 pt-8 md:pt-12 border-t border-slate-100 text-center relative z-10">
-              {[
-                { val: 25, label: "Happy Clients", suffix: "+" },
-                { val: 30, label: "Projects Done", suffix: "+" },
-                { val: 100, label: "Satisfaction", suffix: "%" },
-                { val: 2, label: "Years Experience", suffix: "+" }
-              ].map((metric, i) => (
-                <MagicCard 
-                  key={i} 
-                  glowColor="191, 240, 245" 
-                  enableTilt={false}
-                  className="flex flex-col items-center justify-center p-4 md:p-6 bg-slate-50/50 rounded-2xl md:rounded-3xl border border-slate-100/50 shadow-sm transition-all duration-500 hover:-translate-y-1 md:hover:-translate-y-2 hover:shadow-[0_10px_30px_rgba(224,166,247,0.2)] hover:bg-white group cursor-default"
-                >
-                  <span className="text-3xl sm:text-4xl md:text-5xl font-black text-transparent bg-clip-text bg-gradient-to-r from-slate-900 to-slate-700 group-hover:from-[#e0a6f7] group-hover:to-blue-600 transition-all duration-500 drop-shadow-sm" aria-label={`${metric.val}${metric.suffix}`}>
-                    <AnimatedCounter end={metric.val} suffix={metric.suffix} />
-                  </span>
-                  <span className="text-[10px] md:text-xs text-slate-500 font-bold uppercase tracking-wider mt-1.5 md:mt-3 font-['Familjen_Grotesk'] group-hover:text-slate-800 transition-colors duration-500">{metric.label}</span>
-                </MagicCard>
-              ))}
+            <div className="relative mt-10 md:mt-16 rounded-[2rem] overflow-hidden border border-white/20 shadow-[0_8px_32px_rgba(0,0,0,0.1)]">
+              {/* Optimized Background Image */}
+              <div className="absolute inset-0 pointer-events-none z-0">
+                <Image
+                  src="https://res.cloudinary.com/dpqsadqxj/image/upload/v1786457980/Glassmorphism_bals_tmhclq.png"
+                  alt="Statistics Background"
+                  fill
+                  sizes="100vw"
+                  quality={75}
+                  priority={false}
+                  className="object-cover object-center w-full h-full scale-[1.02] transform-gpu will-change-transform"
+                />
+              </div>
+
+              {/* Grid with glass-card elements */}
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-4 sm:gap-6 p-6 sm:p-8 md:p-12 text-center relative z-10">
+                {[
+                  { val: 25, label: "Happy Clients", suffix: "+" },
+                  { val: 30, label: "Projects Done", suffix: "+" },
+                  { val: 100, label: "Satisfaction", suffix: "%" },
+                  { val: 2, label: "Years Experience", suffix: "+" }
+                ].map((metric, i) => (
+                  <div 
+                    key={i} 
+                    className="glass-card flex flex-col items-center justify-center p-6 sm:p-8 md:p-10 transition-transform duration-500 hover:-translate-y-1 md:hover:-translate-y-2 group cursor-default"
+                  >
+                    <span className="text-4xl sm:text-5xl md:text-6xl font-black text-transparent bg-clip-text bg-gradient-to-br from-white to-white/70 group-hover:to-white transition-all duration-500 drop-shadow-md" aria-label={`${metric.val}${metric.suffix}`}>
+                      <AnimatedCounter end={metric.val} suffix={metric.suffix} />
+                    </span>
+                    <span className="text-xs md:text-sm text-white/90 font-bold uppercase tracking-wider mt-2 md:mt-3 font-['Familjen_Grotesk'] group-hover:text-white transition-colors duration-500 drop-shadow-sm text-center">{metric.label}</span>
+                  </div>
+                ))}
+              </div>
             </div>
 
           </div>
