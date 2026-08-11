@@ -139,7 +139,7 @@ export default function Projects() {
               >
                 <div className="absolute inset-0 bg-gradient-to-br from-[#bff0f5]/10 via-transparent to-[#e0a6f7]/10 opacity-0 group-hover:opacity-100 transition-opacity duration-700 pointer-events-none z-0" />
 
-                <div className="h-48 sm:h-56 md:h-64 relative flex flex-col justify-between overflow-hidden p-5 md:p-6 z-10 rounded-t-3xl md:rounded-t-[2rem]">
+                <div data-theme="dark" className="h-48 sm:h-56 md:h-64 relative flex flex-col justify-between overflow-hidden p-5 md:p-6 z-10 rounded-t-3xl md:rounded-t-[2rem]">
                   <Image 
                     src={project.image}
                     alt={`Screenshot of ${project.title} website`}
@@ -251,7 +251,7 @@ export default function Projects() {
                     <div className="absolute inset-0 bg-gradient-to-r from-transparent to-[#bff0f5]/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" />
                     
                     <div className="flex items-center space-x-3 md:space-x-5 mb-3 md:mb-5 relative z-10">
-                      <div className="w-12 h-12 md:w-14 md:h-14 rounded-full overflow-hidden border-2 border-white relative shadow-sm md:shadow-md group-hover:border-[#a6f7d0] transition-colors duration-500 flex-shrink-0">
+                      <div data-theme="dark" className="w-12 h-12 md:w-14 md:h-14 rounded-full overflow-hidden border-2 border-white relative shadow-sm md:shadow-md group-hover:border-[#a6f7d0] transition-colors duration-500 flex-shrink-0">
                         <Image 
                           src={client.img} 
                           alt={`Portrait of ${client.name}`} 
@@ -280,7 +280,7 @@ export default function Projects() {
 
             </div>
 
-            <div className="relative mt-10 md:mt-16 rounded-[2rem] overflow-hidden shadow-[0_8px_32px_rgba(0,0,0,0.1)]">
+            <div data-theme="dark" className="relative mt-10 md:mt-16 rounded-[2rem] overflow-hidden shadow-[0_8px_32px_rgba(0,0,0,0.1)]">
               {/* Optimized Background Image */}
               <div className="absolute inset-0 pointer-events-none z-0">
                 <Image
