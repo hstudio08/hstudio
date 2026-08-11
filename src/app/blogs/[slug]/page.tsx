@@ -49,7 +49,7 @@ const mdxComponents = {
     return (
       <figure className={`my-8 w-full ${alignClasses[align as keyof typeof alignClasses]}`}>
         <div className={`relative w-full rounded-2xl overflow-hidden shadow-lg border border-slate-200 ${aspectClasses[aspect as keyof typeof aspectClasses]}`}>
-          <Image src={src} alt={alt} fill className="object-cover" />
+          <Image src={src} alt={alt} fill sizes="(max-width: 768px) 100vw, 800px" className="object-cover" />
         </div>
         {caption && <figcaption className="text-center text-sm text-slate-500 mt-3 font-medium">{caption}</figcaption>}
       </figure>
@@ -177,7 +177,7 @@ export default async function SingleBlogPost({ params }: Props) {
                     <Link key={post.slug} href={`/blogs/${post.slug}`} className="group flex gap-4 items-center">
                       <div className="relative w-20 h-20 rounded-xl overflow-hidden bg-slate-100 shrink-0 border border-slate-100">
                         <Image 
-                          src={post.frontmatter.image} alt={post.frontmatter.title} fill
+                          src={post.frontmatter.image} alt={post.frontmatter.title} fill sizes="80px"
                           className="object-cover transition-transform duration-500 group-hover:scale-110"
                         />
                       </div>

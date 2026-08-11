@@ -68,6 +68,7 @@ export default function BlogsPage() {
                       src={post.frontmatter.authorImage} 
                       alt={post.frontmatter.author} 
                       fill
+                      sizes="24px"
                       className="object-cover"
                     />
                   </div>
