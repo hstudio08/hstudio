@@ -57,9 +57,16 @@ export default function TermsAndConditions() {
           </section>
 
           <section>
-            <h2 className="text-xl font-bold text-slate-900 mb-3">6. Governing Law</h2>
+            <h2 className="text-xl font-bold text-slate-900 mb-3">6. Hiring and Employment</h2>
             <p>
-              These Terms and Conditions shall be governed by and construed in accordance with the laws of India. Any disputes arising out of or relating to these terms will be subject to the exclusive jurisdiction of the courts located in Srinagar, Jammu and Kashmir.
+              Submission of an application, resume, or portfolio through the Careers portal does not guarantee employment or an interview. It is the sole wish, will, and absolute right of Qurevo Technologies to accept, review, or reject any candidate for any position at our complete discretion, without any obligation to provide a reason or justification.
+            </p>
+          </section>
+
+          <section>
+            <h2 className="text-xl font-bold text-slate-900 mb-3">7. Governing Law and Jurisdiction</h2>
+            <p>
+              These Terms and Conditions shall be governed and construed in accordance with the laws of <strong>India</strong>, particularly the Information Technology Act, 2000, and other applicable data and corporate regulations. Any disputes arising from or in connection with these terms shall be subject to the exclusive jurisdiction of the courts in Jammu & Kashmir, India.
             </p>
           </section>
 

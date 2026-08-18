@@ -30,7 +30,6 @@ export default function Navbar() {
 
   const isHome = pathname === '/' || pathname === '/home';
 
-  // Only use rotation. CSS flex-wrap will handle the layout perfectly.
   const navLinks = useMemo(() => {
     return [
       { label: 'Home', href: '/home', rotation: -5 }, 
@@ -40,6 +39,7 @@ export default function Navbar() {
       ] : []),
       { label: 'Who we are?', href: '/about', rotation: 3 },
       { label: 'Blogs', href: '/blogs', rotation: -4 },
+      { label: 'Careers', href: '/careers', rotation: 2 },
     ];
   }, [isHome]);
 

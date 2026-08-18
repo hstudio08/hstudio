@@ -10,11 +10,12 @@ import AdminLogin from '../../../components/AdminLogin';
 export default function AdminPanel() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [loading, setLoading] = useState(true);
-  const [activeTab, setActiveTab] = useState<'bookings' | 'reviews'>('bookings');
+  const [activeTab, setActiveTab] = useState<'bookings' | 'reviews' | 'applications'>('bookings');
   const [bookingFilter, setBookingFilter] = useState<'all' | 'myexpert' | 'standard' | 'rejected'>('all');
   
   const [bookings, setBookings] = useState<any[]>([]);
   const [reviews, setReviews] = useState<any[]>([]);
+  const [applications, setApplications] = useState<any[]>([]);
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (user) => {
@@ -22,6 +23,7 @@ export default function AdminPanel() {
         setIsAuthenticated(true);
         fetchBookings();
         fetchReviews();
+        fetchApplications();
       } else {
         setIsAuthenticated(false);
       }
@@ -29,6 +31,18 @@ export default function AdminPanel() {
     });
     return () => unsubscribe();
   }, []);
+
+  const fetchApplications = async () => {
+    try {
+      const querySnapshot = await getDocs(collection(db, "job_applications"));
+      const data = querySnapshot.docs
+        .map(doc => ({ id: doc.id, ...doc.data() }))
+        .sort((a: any, b: any) => (b.timestamp?.seconds || 0) - (a.timestamp?.seconds || 0));
+      setApplications(data);
+    } catch (err) {
+      console.error("Failed to fetch applications:", err);
+    }
+  };
 
   const fetchBookings = async () => {
     try {
@@ -148,6 +162,16 @@ export default function AdminPanel() {
     }
   };
 
+  const handleDeleteApplication = async (id: string) => {
+    if (!window.confirm("Are you sure you want to permanently delete this application?")) return;
+    try {
+      await deleteDoc(doc(db, "job_applications", id));
+      setApplications(applications.filter(a => a.id !== id));
+    } catch (err) {
+      alert("Failed to delete application. " + err);
+    }
+  };
+
   if (loading) {
     return (
       <div className="min-h-screen flex flex-col items-center justify-center bg-slate-50">
@@ -222,6 +246,16 @@ export default function AdminPanel() {
                 {reviews.filter(r => r.status === 'pending').length} New
               </span>
             )}
+          </button>
+
+          <button 
+            onClick={() => setActiveTab('applications')}
+            className={`px-6 py-3.5 rounded-2xl font-black text-xs uppercase tracking-wider transition-all flex items-center gap-2 ${
+              activeTab === 'applications' ? 'bg-[#1B4D3E] text-white shadow-md' : 'bg-white border border-slate-200 text-slate-600 hover:bg-slate-50'
+            }`}
+          >
+            <span>Job Applications</span>
+            <span className="bg-white/20 text-white px-2 py-0.5 rounded-md text-[10px]">{applications.length}</span>
           </button>
         </div>
 
@@ -487,7 +521,7 @@ export default function AdminPanel() {
             )}
 
           </div>
-        ) : (
+        ) : activeTab === 'reviews' ? (
           <div className="space-y-6">
             <div className="bg-white p-6 rounded-3xl border border-slate-200 shadow-sm flex justify-between items-center">
               <div>
@@ -567,7 +601,80 @@ export default function AdminPanel() {
               </div>
             </div>
           </div>
-        )}
+        ) : activeTab === 'applications' ? (
+          <div className="space-y-6">
+            <div className="bg-white p-6 rounded-3xl border border-slate-200 shadow-sm flex flex-col justify-between items-start gap-4">
+              <div className="space-y-1">
+                <h2 className="text-2xl font-black text-slate-900 tracking-tight">Job Applications</h2>
+                <p className="text-xs text-slate-500">Manage incoming applications for developer positions.</p>
+              </div>
+            </div>
+
+            <div className="bg-white rounded-3xl border border-slate-200 shadow-sm overflow-hidden">
+              <div className="overflow-x-auto">
+                <table className="w-full text-left border-collapse">
+                  <thead>
+                    <tr className="bg-slate-50 border-b border-slate-200 text-xs uppercase tracking-wider text-slate-500 font-bold">
+                      <th className="p-5">Applicant</th>
+                      <th className="p-5">Role</th>
+                      <th className="p-5 text-center">Resume</th>
+                      <th className="p-5 text-right">Date</th>
+                      <th className="p-5 text-right">Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-slate-100 text-sm">
+                    {applications.map((app) => (
+                      <tr key={app.id} className="hover:bg-slate-50/50 transition-colors">
+                        <td className="p-5">
+                          <div className="font-bold text-slate-900">{app.name}</div>
+                          <div className="text-xs text-slate-500">
+                            <a href={`mailto:${app.email}`} className="text-blue-600 hover:underline">{app.email}</a>
+                          </div>
+                        </td>
+                        <td className="p-5 font-medium text-slate-700">
+                          {app.developerType}
+                        </td>
+                        <td className="p-5 text-center">
+                          {app.resumeUrl ? (
+                            <a 
+                              href={app.resumeUrl} 
+                              target="_blank" 
+                              rel="noopener noreferrer"
+                              className="inline-flex items-center gap-1 bg-blue-50 text-blue-600 hover:bg-blue-100 font-bold text-xs px-3 py-1.5 rounded-lg border border-blue-200 transition-colors"
+                            >
+                              <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" /></svg>
+                              View Resume
+                            </a>
+                          ) : (
+                            <span className="text-slate-400 text-xs">No resume</span>
+                          )}
+                        </td>
+                        <td className="p-5 text-right text-slate-500 text-xs font-medium">
+                          {app.timestamp?.seconds ? new Date(app.timestamp.seconds * 1000).toLocaleString() : 'N/A'}
+                        </td>
+                        <td className="p-5 text-right">
+                          <button 
+                            onClick={() => handleDeleteApplication(app.id)}
+                            className="text-red-600 bg-red-50 hover:bg-red-100 text-xs font-bold px-3 py-1.5 rounded-lg border border-red-200 transition-colors"
+                          >
+                            Delete
+                          </button>
+                        </td>
+                      </tr>
+                    ))}
+                    {applications.length === 0 && (
+                      <tr>
+                        <td colSpan={5} className="p-8 text-center text-slate-500">
+                          No applications yet.
+                        </td>
+                      </tr>
+                    )}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        ) : null}
 
       </main>
     </div>

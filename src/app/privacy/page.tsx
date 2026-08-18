@@ -31,7 +31,9 @@ export default function PrivacyPolicy() {
           <section>
             <h2 className="text-xl font-bold text-slate-900 mb-3">2. How We Use Your Information</h2>
             <p>
-              We use the collected information solely for the purpose of communicating with you, verifying your identity (via OTP), fulfilling your service requests, and sending relevant administrative or technical notices. We do not sell, rent, or trade your personal data to third-party marketing companies.
+              We use the collected information solely for the purpose of communicating with you, verifying your identity (via OTP), fulfilling your service requests, and sending relevant administrative or technical notices. We do not sell, rent, or trade your personal data to third-party marketing companies. 
+              <br/><br/>
+              <strong>Hiring & Recruitment:</strong> If you submit information to us for hiring purposes (such as resumes, portfolios, or job applications), you agree that this information is shared with your own consent. Such information may be made public or shared with third parties if required by Qurevo Technologies for any hiring process, background verification, or similar requirements. Furthermore, it is the sole wish, will, and absolute right of Qurevo Technologies to accept or reject any applicant for any job or position without providing justification.
             </p>
           </section>
 
@@ -59,9 +61,17 @@ export default function PrivacyPolicy() {
           </section>
 
           <section>
-            <h2 className="text-xl font-bold text-slate-900 mb-3">6. Changes to This Privacy Policy</h2>
+            <h2 className="text-xl font-bold text-slate-900 mb-3">6. Compliance with Indian Laws</h2>
             <p>
-              We may update our Privacy Policy from time to time. We will notify you of any changes by posting the new Privacy Policy on this page and updating the "Last Updated" date at the top of this document.
+              Qurevo Technologies is based in India and complies with the <strong>Information Technology Act, 2000</strong>, and the <strong>Digital Personal Data Protection (DPDP) Act, 2023</strong>. By submitting your personal data (including job applications, resumes, and contact details), you explicitly consent to the collection, processing, and storage of your data as mandated by Indian law. You have the right to request access to, correction of, or deletion of your personal data at any time.
+            </p>
+          </section>
+
+          <section>
+            <h2 className="text-xl font-bold text-slate-900 mb-3">7. Contact Us</h2>
+            <p>
+              If you have any questions or concerns about this Privacy Policy, please contact us at: <br/>
+              <strong>Email:</strong> qurevo@gmail.com
             </p>
           </section>
 
