@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
 import { GoogleGenAI } from '@google/genai';
 import { adminDb } from '../../../../lib/firebaseAdmin';
-import * as admin from 'firebase-admin';
+import { FieldValue } from 'firebase-admin/firestore';
 
 // Check for API key on initialization
 if (!process.env.GEMINI_API_KEY) {
@@ -95,7 +95,7 @@ DO NOT output any other text, explanation, or punctuation. Output only "REJECT" 
       review: safeReview,
       rating,
       status,
-      createdAt: admin.firestore.FieldValue.serverTimestamp(),
+      createdAt: FieldValue.serverTimestamp(),
     });
 
     return NextResponse.json({ 
