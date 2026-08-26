@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
 import { GoogleGenAI } from '@google/genai';
-import { db } from '../../../../lib/firebase'; 
-import { collection, addDoc, serverTimestamp } from 'firebase/firestore';
+import { adminDb } from '../../../../lib/firebaseAdmin';
+import * as admin from 'firebase-admin';
 
 // Check for API key on initialization
 if (!process.env.GEMINI_API_KEY) {
@@ -87,15 +87,15 @@ DO NOT output any other text, explanation, or punctuation. Output only "REJECT" 
     console.log(`-----------------------------\n`);
 
     // ==========================================
-    // 3. SAVE TO FIRESTORE
+    // 3. SAVE TO FIRESTORE VIA ADMIN SDK
     // ==========================================
-    const docRef = await addDoc(collection(db, 'reviews'), {
+    const docRef = await adminDb.collection('reviews').add({
       name: safeName,
       email: safeEmail,
       review: safeReview,
       rating,
       status,
-      createdAt: serverTimestamp(),
+      createdAt: admin.firestore.FieldValue.serverTimestamp(),
     });
 
     return NextResponse.json({ 
