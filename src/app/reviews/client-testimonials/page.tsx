@@ -244,7 +244,7 @@ export default function ClientTestimonialsPage() {
       />
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd).replace(/</g, '\\u003c') }}
       />
 
       <div className="bg-[#f8f9ff] min-h-screen text-[#0b1c30] flex flex-col font-sans selection:bg-[#0058bc] selection:text-white relative">

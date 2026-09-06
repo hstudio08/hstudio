@@ -108,7 +108,7 @@ export default async function SingleBlogPost({ params }: Props) {
   return (
     <main className="flex flex-col min-h-screen bg-slate-50 selection:bg-blue-200">
       <Navbar />
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd).replace(/</g, '\\u003c') }} />
 
       <div className="pt-28 md:pt-36 pb-16 px-4 sm:px-6 md:px-8 max-w-[96rem] mx-auto w-full z-10 flex-grow">
         

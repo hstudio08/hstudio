@@ -12,6 +12,11 @@ export async function uploadResumeAction(formData: FormData) {
     throw new Error("No image file provided");
   }
 
+  // SECURITY FIX: Strictly validate that this is an image file
+  if (!file.type.startsWith('image/')) {
+    throw new Error("Invalid file format. Only images are allowed.");
+  }
+
   // Convert File to base64 to ensure it securely travels through Node.js fetch
   const arrayBuffer = await file.arrayBuffer();
   const buffer = Buffer.from(arrayBuffer);
