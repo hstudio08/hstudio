@@ -15,7 +15,8 @@ export const config = {
   // - _next/static (static files)
   // - _next/image (image optimization files)
   // - favicon.ico and typical image extensions
+  // - SEO and crawler files (robots.txt, sitemap.xml, llms.txt)
   matcher: [
-    '/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)',
+    '/((?!_next/static|_next/image|favicon.ico|robots.txt|sitemap.xml|llms.txt|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)',
   ],
 }

@@ -1,0 +1,15 @@
+# Qurevo Technologies
+
+Qurevo Technologies is a premier web development company based in Srinagar, Kashmir. We specialize in building high-performance, fast, and modern websites for brands globally. 
+
+## Services
+- Web Development
+- UI/UX Design
+- E-commerce Development
+- SEO & Performance Optimization
+
+## Helpful Links
+- [Home](https://www.qurevo.in/)
+- [About Us](https://www.qurevo.in/about)
+- [Careers](https://www.qurevo.in/careers)
+- [Client Testimonials](https://www.qurevo.in/reviews/client-testimonials)

@@ -1,7 +1,10 @@
 import type { Metadata, Viewport } from "next";
-import ClickSpark from "../../effects/ClickSpark";
-import FireSparks from "../../effects/FireSparks"; 
+import dynamic from "next/dynamic";
 import "./globals.css";
+
+// Dynamically import heavy canvas effects so they don't block the main thread or initial render
+const ClickSpark = dynamic(() => import("../../effects/ClickSpark"), { ssr: false });
+const FireSparks = dynamic(() => import("../../effects/FireSparks"), { ssr: false });
 
 // Viewport configuration for mobile optimization and theme colors
 export const viewport: Viewport = {
