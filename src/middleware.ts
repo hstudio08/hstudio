@@ -2,12 +2,8 @@ import { NextResponse } from 'next/server'
 import type { NextRequest } from 'next/server'
 
 export function middleware(request: NextRequest) {
-  // Always rewrite to the maintenance page, keeping the user's URL intact
-  if (request.nextUrl.pathname === '/maintenance') {
-    return NextResponse.next();
-  }
-  
-  return NextResponse.rewrite(new URL('/maintenance', request.url));
+  // Maintenance mode temporarily disabled so the user can inspect the live site
+  return NextResponse.next();
 }
 
 export const config = {
