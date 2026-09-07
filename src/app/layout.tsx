@@ -3,8 +3,8 @@ import dynamic from "next/dynamic";
 import "./globals.css";
 
 // Dynamically import heavy canvas effects so they don't block the main thread or initial render
-const ClickSpark = dynamic(() => import("../../effects/ClickSpark"), { ssr: false });
-const FireSparks = dynamic(() => import("../../effects/FireSparks"), { ssr: false });
+const ClickSpark = dynamic(() => import("../../effects/ClickSpark"));
+const FireSparks = dynamic(() => import("../../effects/FireSparks"));
 
 // Viewport configuration for mobile optimization and theme colors
 export const viewport: Viewport = {
