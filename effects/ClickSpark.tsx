@@ -21,7 +21,7 @@ interface ClickSparkProps {
 }
 
 const ClickSpark: React.FC<ClickSparkProps> = ({
-  sparkColors = ['#10B981', '#3B82F6', '#F97316'], // Vibrant Green, Blue, Orange
+  sparkColors = ['#10B981', '#3B82F6', '#F97316'],
   sparkSize = 12,
   sparkRadius = 20,
   sparkCount = 8,
@@ -33,13 +33,11 @@ const ClickSpark: React.FC<ClickSparkProps> = ({
   const sparksRef = useRef<Spark[]>([]);
   const startTimeRef = useRef<number | null>(null);
 
-  // Canvas Resizing (Global Window)
   useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
 
     let resizeTimeout: NodeJS.Timeout;
-
     const resizeCanvas = () => {
       if (canvas.width !== window.innerWidth || canvas.height !== window.innerHeight) {
         canvas.width = window.innerWidth;
@@ -67,20 +65,19 @@ const ClickSpark: React.FC<ClickSparkProps> = ({
         case 'linear': return t;
         case 'ease-in': return t * t;
         case 'ease-in-out': return t < 0.5 ? 2 * t * t : -1 + (4 - 2 * t) * t;
-        default: return t * (2 - t); // ease-out
+        default: return t * (2 - t);
       }
     },
     [easing]
   );
 
-  // Animation Loop
   useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
     const ctx = canvas.getContext('2d');
     if (!ctx) return;
 
-    let animationId: number;
+    let animationId: number | null = null;
 
     const draw = (timestamp: number) => {
       if (!startTimeRef.current) startTimeRef.current = timestamp;
@@ -90,7 +87,7 @@ const ClickSpark: React.FC<ClickSparkProps> = ({
         const elapsed = timestamp - spark.startTime;
         if (elapsed >= duration) return false;
 
-        const progress = elapsed / duration;
+        const progress = Math.min(elapsed / duration, 1);
         const eased = easeFunc(progress);
 
         const distance = eased * sparkRadius * extraScale;
@@ -112,23 +109,18 @@ const ClickSpark: React.FC<ClickSparkProps> = ({
         return true;
       });
 
-      animationId = requestAnimationFrame(draw);
+      if (sparksRef.current.length > 0) {
+        animationId = requestAnimationFrame(draw);
+      } else {
+        animationId = null;
+        startTimeRef.current = null;
+      }
     };
 
-    animationId = requestAnimationFrame(draw);
-
-    return () => cancelAnimationFrame(animationId);
-  }, [sparkSize, sparkRadius, duration, easeFunc, extraScale]);
-
-  // Global Click Listener
-  useEffect(() => {
     const handleGlobalClick = (e: MouseEvent) => {
       const now = performance.now();
-      
       const newSparks: Spark[] = Array.from({ length: sparkCount }, (_, i) => {
-        // Pick a random color from the provided array
         const randomColor = sparkColors[Math.floor(Math.random() * sparkColors.length)];
-        
         return {
           x: e.clientX,
           y: e.clientY,
@@ -138,16 +130,22 @@ const ClickSpark: React.FC<ClickSparkProps> = ({
         };
       });
 
+      const wasEmpty = sparksRef.current.length === 0;
       sparksRef.current.push(...newSparks);
+
+      if (wasEmpty && !animationId) {
+        startTimeRef.current = null;
+        animationId = requestAnimationFrame(draw);
+      }
     };
 
-    // Attach to window so it fires regardless of where the user clicks
     window.addEventListener('click', handleGlobalClick);
 
     return () => {
       window.removeEventListener('click', handleGlobalClick);
+      if (animationId !== null) cancelAnimationFrame(animationId);
     };
-  }, [sparkCount, sparkColors]);
+  }, [sparkSize, sparkRadius, duration, easeFunc, extraScale, sparkCount, sparkColors]);
 
   return (
     <canvas
@@ -158,8 +156,8 @@ const ClickSpark: React.FC<ClickSparkProps> = ({
         left: 0,
         width: '100vw',
         height: '100vh',
-        pointerEvents: 'none', // Crucial: lets clicks pass through to buttons/links
-        zIndex: 9999, // Ensures sparks appear above everything
+        pointerEvents: 'none',
+        zIndex: 9999,
       }}
     />
   );

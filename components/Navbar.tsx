@@ -102,7 +102,7 @@ export default function Navbar() {
           <nav className="relative z-10 flex items-center justify-between px-4 md:px-6 py-2.5 md:py-3 w-full">
             
             <Link href={navLinks[0]?.href || '/'} className="flex items-center">
-              <img src="https://res.cloudinary.com/dpqsadqxj/image/upload/q_auto/f_auto/v1780941361/logo_p83oao_oke7zd0000_sdggc1.webp" alt="Qurevo Technologies Logo" className="w-9 h-9 md:w-11 md:h-11 object-contain" />
+              <img src="https://res.cloudinary.com/dpqsadqxj/image/upload/c_scale,w_100/q_auto/f_auto/v1780941361/logo_p83oao_oke7zd0000_sdggc1.webp" alt="Qurevo Technologies Logo" className="w-9 h-9 md:w-11 md:h-11 object-contain" />
             </Link>
 
             {/* Desktop Nav */}
@@ -122,6 +122,7 @@ export default function Navbar() {
               <button 
                 className="md:hidden flex flex-col justify-center items-center w-8 h-8 gap-1.5 focus:outline-none" 
                 onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+                aria-label="Toggle mobile menu"
               >
                 <span className={`h-[2px] w-5 rounded transition-transform duration-300 ${hamburgerBgClass} ${isMobileMenuOpen ? 'rotate-45 translate-y-[8px]' : ''}`}></span>
                 <span className={`h-[2px] w-5 rounded transition-opacity duration-300 ${hamburgerBgClass} ${isMobileMenuOpen ? 'opacity-0' : 'opacity-100'}`}></span>

@@ -199,7 +199,7 @@ export default function BookingModal({ isOpen, onClose }: BookingModalProps) {
           <div className="flex items-center">
             <Image src="/icons/fulllogo.png" alt="Qurevo Logo" width={1056} height={733} className="h-10 sm:h-22 w-auto object-contain" />
           </div>
-          <button type="button" onClick={resetAndClose} className="p-1.5 text-slate-400 hover:text-slate-800 bg-slate-50 hover:bg-slate-100 rounded-full transition-colors outline-none">
+          <button type="button" onClick={resetAndClose} aria-label="Close" className="p-1.5 text-slate-400 hover:text-slate-800 bg-slate-50 hover:bg-slate-100 rounded-full transition-colors outline-none">
             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12"></path></svg>
           </button>
         </div>

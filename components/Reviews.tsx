@@ -267,6 +267,7 @@ export default function Reviews() {
                       key={star} 
                       type="button"
                       onClick={() => setFormData({...formData, rating: star})}
+                      aria-label={`Rate ${star} stars`}
                       className="focus:outline-none transition-transform hover:scale-110"
                     >
                       <StarIcon filled={star <= formData.rating} />
